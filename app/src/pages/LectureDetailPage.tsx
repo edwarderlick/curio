@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useLecture, useIsLectureUnlocked } from "@/lib/index/hooks";
 import { useConnectedAddress, useWalletStore } from "@/features/wallet/store";
 import { useChainPrice } from "@/lib/chains/pricing";
@@ -14,6 +14,7 @@ const TABS = ["Description", "Curriculum", "Reviews"] as const;
 
 export function LectureDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data, isLoading, isError, error } = useLecture(id);
   const [tab, setTab] = useState<(typeof TABS)[number]>("Description");
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -58,7 +59,7 @@ export function LectureDetailPage() {
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-8 bg-black/40">
               <span className="material-symbols-outlined text-5xl text-secondary-fixed mb-4">lock_open</span>
               <p className="text-white font-bold mb-6">Unlocked — ready to stream</p>
-              <Button size="lg" icon={<span className="material-symbols-outlined">play_arrow</span>} iconPosition="left" onClick={() => (window.location.href = `/lecture/${lecture.id}/watch`)}>
+              <Button size="lg" icon={<span className="material-symbols-outlined">play_arrow</span>} iconPosition="left" onClick={() => navigate(`/lecture/${lecture.id}/watch`)}>
                 Watch Now
               </Button>
             </div>

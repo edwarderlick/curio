@@ -9,7 +9,12 @@ export function useAptosWallet() {
   const { account, connected, isLoading, connect, disconnect, wallets, signAndSubmitTransaction } = useAptosAdapter();
 
   const doConnect = useCallback(() => {
-    const target = wallets.find((w) => w.readyState === WalletReadyState.Installed);
+    const installed = wallets.filter((w) => w.readyState === WalletReadyState.Installed);
+    // The adapter always lists a built-in "sign in with Google" keyless
+    // option as installed, alongside real extensions — prefer an actual
+    // extension (Petra) over it when both are available, so connecting
+    // doesn't randomly land on the Google flow instead of the extension.
+    const target = installed.find((w) => w.name.toLowerCase().includes("petra")) ?? installed[0];
     if (!target) throw new Error("No Aptos wallet detected — install Petra or another Aptos wallet.");
     connect(target.name);
   }, [wallets, connect]);
