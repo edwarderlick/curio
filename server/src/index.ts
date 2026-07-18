@@ -261,26 +261,34 @@ app.get("/api/upload/:jobId/events", (req, res) => {
 });
 
 async function runUploadPipeline(jobId: string, sourcePath: string, courseId: string, lectureId: string, expirationMicros: number) {
-  jobBus.update(jobId, { stage: "uploading_source", message: "Source file received" });
-  await assertFfmpegAvailable();
+  // outputDir is declared outside the try so the finally block can clean it
+  // up even if something throws before/during its creation — previously
+  // cleanup only ran after a full success, so any failed job (bad ffmpeg
+  // input, insufficient ShelbyUSD, network error, etc.) permanently leaked
+  // its source video + transcode output in /tmp.
+  let outputDir: string | undefined;
+  try {
+    jobBus.update(jobId, { stage: "uploading_source", message: "Source file received" });
+    await assertFfmpegAvailable();
 
-  const outputDir = await mkdtemp(path.join(os.tmpdir(), "curio-transcode-"));
-  jobBus.update(jobId, { stage: "transcoding", message: "Transcoding to multi-bitrate HLS..." });
-  const { masterPlaylistName } = await runTranscode(sourcePath, outputDir);
+    outputDir = await mkdtemp(path.join(os.tmpdir(), "curio-transcode-"));
+    jobBus.update(jobId, { stage: "transcoding", message: "Transcoding to multi-bitrate HLS..." });
+    const { masterPlaylistName } = await runTranscode(sourcePath, outputDir);
 
-  const signer = await loadCliAccount(process.env.SHELBY_CLI_ACCOUNT_NAME || "dev");
-  const blobPrefix = `courses/${courseId}/${lectureId}`;
+    const signer = await loadCliAccount(process.env.SHELBY_CLI_ACCOUNT_NAME || "dev");
+    const blobPrefix = `courses/${courseId}/${lectureId}`;
 
-  jobBus.update(jobId, { stage: "uploading_segments", message: "Uploading segments to Shelbynet...", progress: { current: 0, total: 1 } });
-  await uploadDirectoryToShelby(outputDir, blobPrefix, signer, expirationMicros, (current, total, file) => {
-    jobBus.update(jobId, { stage: "uploading_segments", message: `Uploading ${file}`, progress: { current, total } });
-  });
+    jobBus.update(jobId, { stage: "uploading_segments", message: "Uploading segments to Shelbynet...", progress: { current: 0, total: 1 } });
+    await uploadDirectoryToShelby(outputDir, blobPrefix, signer, expirationMicros, (current, total, file) => {
+      jobBus.update(jobId, { stage: "uploading_segments", message: `Uploading ${file}`, progress: { current, total } });
+    });
 
-  const manifestPath = `${signer.accountAddress.toString()}/${blobPrefix}/${masterPlaylistName}`;
-  jobBus.update(jobId, { stage: "complete", message: "Upload complete", manifestPath });
-
-  await rm(sourcePath, { force: true });
-  await rm(outputDir, { recursive: true, force: true });
+    const manifestPath = `${signer.accountAddress.toString()}/${blobPrefix}/${masterPlaylistName}`;
+    jobBus.update(jobId, { stage: "complete", message: "Upload complete", manifestPath });
+  } finally {
+    await rm(sourcePath, { force: true });
+    if (outputDir) await rm(outputDir, { recursive: true, force: true });
+  }
 }
 
 app.listen(PORT, () => {
