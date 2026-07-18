@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Curio - Explore &amp; Discover</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "surface-container-lowest": "#0e0e0e",
+                  "outline-variant": "#5a4136",
+                  "secondary-fixed-dim": "#87dd00",
+                  "tertiary": "#ddb7ff",
+                  "inverse-surface": "#e5e2e1",
+                  "secondary-fixed": "#9bfc00",
+                  "on-tertiary-fixed-variant": "#6900b3",
+                  "on-secondary-container": "#427000",
+                  "primary-fixed": "#ffdbcc",
+                  "on-tertiary": "#490080",
+                  "tertiary-fixed-dim": "#ddb7ff",
+                  "surface-dim": "#131313",
+                  "primary-container": "#ff6b00",
+                  "on-primary-fixed": "#351000",
+                  "outline": "#a98a7d",
+                  "surface": "#131313",
+                  "tertiary-fixed": "#f0dbff",
+                  "on-secondary-fixed": "#0f2000",
+                  "on-tertiary-fixed": "#2c0051",
+                  "secondary-container": "#9bfc00",
+                  "on-error-container": "#ffdad6",
+                  "on-secondary-fixed-variant": "#2e4f00",
+                  "on-primary-fixed-variant": "#7a3000",
+                  "inverse-primary": "#a04100",
+                  "tertiary-container": "#bd79ff",
+                  "primary-fixed-dim": "#ffb693",
+                  "surface-container": "#201f1f",
+                  "on-surface-variant": "#e2bfb0",
+                  "error": "#ffb4ab",
+                  "surface-container-low": "#1c1b1b",
+                  "error-container": "#93000a",
+                  "on-background": "#e5e2e1",
+                  "primary": "#ffb693",
+                  "surface-variant": "#353534",
+                  "secondary": "#ffffff",
+                  "on-tertiary-container": "#4a0081",
+                  "inverse-on-surface": "#313030",
+                  "on-secondary": "#1e3700",
+                  "surface-container-high": "#2a2a2a",
+                  "on-primary-container": "#572000",
+                  "surface-tint": "#ffb693",
+                  "background": "#131313",
+                  "surface-bright": "#3a3939",
+                  "on-surface": "#e5e2e1",
+                  "on-error": "#690005",
+                  "on-primary": "#561f00",
+                  "surface-container-highest": "#353534"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "margin-desktop": "64px",
+                  "container-max-width": "1440px",
+                  "margin-mobile": "20px",
+                  "gutter": "24px",
+                  "unit": "4px"
+          },
+          "fontFamily": {
+                  "headline-md": ["Hanken Grotesk"],
+                  "headline-lg": ["Hanken Grotesk"],
+                  "body-md": ["Inter"],
+                  "body-lg": ["Inter"],
+                  "headline-lg-mobile": ["Hanken Grotesk"],
+                  "display-lg": ["Hanken Grotesk"],
+                  "label-sm": ["JetBrains Mono"]
+          },
+          "fontSize": {
+                  "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                  "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                  "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                  "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                  "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                  "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "label-sm": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #0e0e0e;
+      color: #e5e2e1;
+      -webkit-font-smoothing: antialiased;
+    }
+    .glass-card {
+      background: rgba(22, 22, 22, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-card:hover {
+      border: 1px solid rgba(255, 107, 0, 0.3);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #353534;
+      border-radius: 10px;
+    }
+    .active-nav-glow {
+      box-shadow: 0 0 20px rgba(255, 107, 0, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface custom-scrollbar selection:bg-primary-container/30">
+<!-- TopNavBar Navigation Shell -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-surface/70 backdrop-blur-xl border-b border-white/10 shadow-xl">
+<div class="max-w-container-max-width mx-auto px-margin-desktop py-4 flex justify-between items-center gap-8">
+<div class="flex items-center gap-12">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary-container cursor-pointer">Curio</span>
+<!-- Navigation Links -->
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary pb-1" href="#">Explore</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Creators</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Leaderboard</a>
+</div>
+</div>
+<!-- Search Bar on Left (relative to layout) -->
+<div class="flex-grow max-w-xl">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-high/50 border border-white/5 rounded-full py-2.5 pl-12 pr-4 font-body-md text-body-md focus:outline-none focus:border-primary-container transition-all group-hover:bg-surface-container-high" placeholder="Search courses, creators, or topics..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">account_balance_wallet</button>
+<div class="h-6 w-[1px] bg-white/10 mx-2"></div>
+<button class="hidden lg:block px-6 py-2 rounded-full font-label-sm text-label-sm bg-surface-variant text-on-surface-variant hover:bg-surface-container-highest transition-all">Creator Studio</button>
+<button class="px-6 py-2 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary-container font-bold hover:scale-105 active:scale-95 transition-all">Connect Wallet</button>
+</div>
+</div>
+</nav>
+<div class="pt-24 flex min-h-screen">
+<!-- Left Sidebar Filter -->
+<aside class="w-72 fixed left-0 top-24 bottom-0 border-r border-white/5 bg-surface-container-low/80 backdrop-blur-lg px-8 py-8 overflow-y-auto custom-scrollbar hidden xl:block">
+<div class="space-y-10">
+<!-- Categories -->
+<section>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Categories</h3>
+<div class="space-y-3">
+<label class="flex items-center gap-3 group cursor-pointer">
+<input checked="" class="rounded border-outline bg-surface-container text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Tech &amp; Engineering</span>
+</label>
+<label class="flex items-center gap-3 group cursor-pointer">
+<input class="rounded border-outline bg-surface-container text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Design &amp; Creative</span>
+</label>
+<label class="flex items-center gap-3 group cursor-pointer">
+<input class="rounded border-outline bg-surface-container text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Business &amp; Solana Ops</span>
+</label>
+</div>
+</section>
+<!-- Chain Filter -->
+<section>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Network</h3>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-primary-container/20 border border-primary-container/40 font-label-sm text-label-sm text-primary">Solana</button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-variant border border-white/5 font-label-sm text-label-sm text-on-surface-variant hover:border-primary/30 transition-all">Ethereum</button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-variant border border-white/5 font-label-sm text-label-sm text-on-surface-variant hover:border-primary/30 transition-all">Aptos</button>
+</div>
+</section>
+<!-- Price Range -->
+<section>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Price Range (USD)</h3>
+<div class="space-y-4">
+<input class="w-full h-1 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary-container" type="range"/>
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>$0</span>
+<span>$500+</span>
+</div>
+</div>
+</section>
+<!-- Duration -->
+<section>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Duration</h3>
+<select class="w-full bg-surface-container-high border-white/5 rounded-xl font-body-md text-body-md py-3 px-4 focus:ring-primary-container focus:border-primary-container">
+<option>Any length</option>
+<option>Under 2 hours</option>
+<option>2 - 5 hours</option>
+<option>5+ hours</option>
+</select>
+</section>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-grow xl:ml-72 px-margin-mobile md:px-12 py-8 max-w-[1440px]">
+<!-- Top Actions & Navigation Pills -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+<div class="flex items-center gap-2 p-1 bg-surface-container-low rounded-2xl border border-white/5 w-fit">
+<button class="px-6 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-bold font-body-md shadow-lg transition-all">All</button>
+<button class="px-6 py-2.5 rounded-xl text-on-surface-variant hover:bg-white/5 font-body-md transition-all">Courses</button>
+<button class="px-6 py-2.5 rounded-xl text-on-surface-variant hover:bg-white/5 font-body-md transition-all">Single Lectures</button>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+<span class="px-4 py-2 rounded-full glass-card text-primary font-label-sm text-label-sm whitespace-nowrap cursor-pointer">DeFi Architectures</span>
+<span class="px-4 py-2 rounded-full glass-card text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap cursor-pointer">Rust for Solana</span>
+<span class="px-4 py-2 rounded-full glass-card text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap cursor-pointer">Motion Design</span>
+<span class="px-4 py-2 rounded-full glass-card text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap cursor-pointer">Game Theory</span>
+</div>
+</div>
+<!-- Main Feed Section -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Course Card 1 -->
+<div class="glass-card rounded-[2rem] overflow-hidden flex flex-col group cursor-pointer transition-all duration-500 hover:-translate-y-2">
+<div class="relative aspect-video">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="A high-fidelity digital rendering of a floating 3D abstract sculpture made of orange glass and metallic chrome against a deep charcoal void. The sculpture is illuminated by a sharp spotlight, casting cinematic shadows and highlights. The background features a subtle backdrop blur effect, typical of premium dashboard aesthetics. High contrast and intellectual energy dominate the composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiBeH4Ql8p4hFae3yQH0vJYqab6UVAlIfHJLUyhu-LTp_klpnVoEvMi343E0Xl8ksmO17tkooe2XC0R5IiCD_DFYRW5T6ws17YZ44CIhlvOtEjJkY-4KL8356nS8L2kr4iw9IVQa9825_l0Oh1fcCJIudbiSb83LrgWZNis4eI7Wg0vhLUBnHMMGmfNXCAZM6juak_555G199w4R5YofFQAW8pTbjMrMWAbB8QH3pT8XOHp3hN9otDpDMxy-SmWZVXBzxJinU1t9gF"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<div class="absolute top-4 right-4 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/10 group-hover:bg-primary-container group-hover:border-primary transition-all duration-300">
+<span class="material-symbols-outlined text-white text-[20px]" data-weight="fill">lock</span>
+</div>
+<div class="absolute bottom-4 left-4 flex items-center gap-2">
+<span class="px-3 py-1 rounded-lg bg-black/40 backdrop-blur-md text-white font-label-sm text-label-sm border border-white/10">14h 25m</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center gap-2 mb-3">
+<span class="px-2 py-0.5 rounded bg-secondary-container/20 text-secondary-fixed text-[10px] font-label-sm uppercase tracking-wider">Solana Ecosystem</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4 group-hover:text-primary transition-colors leading-tight">Advanced Solana Program Architecture with Anchor</h3>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/20 bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a tech-savvy creator with glasses, wearing a sleek black turtleneck. Soft studio lighting on a neutral grey background. The style is premium and corporate, matching a high-end educational dashboard. The overall vibe is intellectual and sophisticated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_U6gyqgDkjZ5gEVXBGJqV-HUNPaE4gw7EgHuYomjhkN8WSwHzyJQgkfCsKzYNefiWAM2J8ZY1eF7CbdkN1FjDdMU6TWCep-xCqAJUmwg7DRuzftWdGG4OaWhlRczxMky7fvgj9ZQOVGKEnuJkSAdY9dBfprVsxyT2ozdTLQvXLweWjJ_l8WeOBcBx92lunIWwsvrvSs6jt3w-Vi3d0coy-1AEcG3HBrE_p_mtM0ohVjRClBZaLBZD0S7R0QN_TwsgCAFmsjv026ff"/>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">Toly Yakovenko</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Lead Architect</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-primary-container font-bold">4.2 SOL</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">≈ $620 USD</p>
+</div>
+</div>
+</div>
+<div class="h-1 w-0 bg-primary-container transition-all duration-500 group-hover:w-full"></div>
+</div>
+<!-- Course Card 2 -->
+<div class="glass-card rounded-[2rem] overflow-hidden flex flex-col group cursor-pointer transition-all duration-500 hover:-translate-y-2">
+<div class="relative aspect-video">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="Vibrant 3D visualization of floating neon circuit paths and orange fiber-optic cables weaving through a dark digital landscape. The lighting is dominated by glowing orange accents and soft purple ambient light, creating a high-energy technological mood. Glassmorphic layers overlap in the composition, adding depth and a sense of sophisticated data flow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOI2DsPkgUzZPGwxan-TBBnEOuMlkLf2E8s598uSBGOBQQg7spPT9O3Ekt1j9aVuXF7XvDpiy535uobRtKDI6g1tbXEQK6QvpAUv1R1Rf82NQ4Jt48JEV0yJq78b8D3rVv_1otzxdBl6hvO-l3GXHIIbsLPpXCnYIXr5RkvIJG_-b0QqROojDjHwwjyhie_zXUDDXzNtCAnVmw7rFF7VGWaqPaa3b2Qos21VzNA5bTJD6YqDmA71PZxH8qFmZVnp53GFRfwBIVDXo0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<div class="absolute top-4 right-4 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/10 group-hover:bg-primary-container group-hover:border-primary transition-all duration-300">
+<span class="material-symbols-outlined text-white text-[20px]" data-weight="fill">lock</span>
+</div>
+<div class="absolute bottom-4 left-4 flex items-center gap-2">
+<span class="px-3 py-1 rounded-lg bg-black/40 backdrop-blur-md text-white font-label-sm text-label-sm border border-white/10">3h 45m</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center gap-2 mb-3">
+<span class="px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary text-[10px] font-label-sm uppercase tracking-wider">Interface Design</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4 group-hover:text-primary transition-colors leading-tight">UX for dApps: From Onboarding to Retention</h3>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/20 bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a minimalist designer in a brightly lit studio with large windows and simple white decor. The person is dressed in modern neutral clothing. The lighting is soft and even, highlighting a professional and creative atmosphere. High-end lifestyle aesthetic for a design professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwp54MO5kyo5x-bgfr7v5H35BqdU2arpoMq3w0cKHSnW9dOnI54znrZQ--PB-dCFOuq18WchVmEuD2koUhDblPSk712pMNWKreqcD0do-xOUIxhX1GOlHpJLi9J692SNSaOonQSIig4Kt9zXXDyaFlDHEsUxtbOVmlVJfV6dj207-EeggOy11-BYVcr64yBTN7vul2RNv9DsqszrJLcmzT0kf44Dggs3K8vbG-pmJkii5tOJmWZN-LSNYPtk4XSQjlHez2UrHKmR1V"/>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">Sarah Grey</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Design Lead</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-primary-container font-bold">1.5 SOL</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">≈ $220 USD</p>
+</div>
+</div>
+</div>
+<div class="h-1 w-0 bg-primary-container transition-all duration-500 group-hover:w-full"></div>
+</div>
+<!-- Course Card 3 -->
+<div class="glass-card rounded-[2rem] overflow-hidden flex flex-col group cursor-pointer transition-all duration-500 hover:-translate-y-2">
+<div class="relative aspect-video">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="A macro photograph of iridescent 3D spheres and geometric crystals floating in a dark, atmospheric environment. The lighting features a vibrant orange ambient glow, reflecting off the surfaces of the shapes. Deep shadows and bright crystalline highlights create a premium, futuristic look. The overall mood is systematic yet artistic and dynamic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW2nAm8fTeKNF6G5iSnSZiAuvbYmTjOUNQ1Hy9NUu_HDClW4qsTcEutVBfH0yND675Wc6wwO3EDrl_qZidnLhkTy4KdIW__8wI41hZWx4lH80MdyHSEz4BZGLXESczapigITQBCDL8PmxYqBayk5tOD-WaOMqcCbAhI1-8jZKuQh_EeD9hlNlbwGy60rvjr8rcfrGuA4qUAw0BW51BfyEYG-eV3SsIbWJ4J_M3NsvkZ3oM0EPbe1Iha7d37FgjcfXVT_Egj-lW10bh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<div class="absolute top-4 right-4 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/10 group-hover:bg-primary-container group-hover:border-primary transition-all duration-300">
+<span class="material-symbols-outlined text-white text-[20px]" data-weight="fill">lock</span>
+</div>
+<div class="absolute bottom-4 left-4 flex items-center gap-2">
+<span class="px-3 py-1 rounded-lg bg-black/40 backdrop-blur-md text-white font-label-sm text-label-sm border border-white/10">8h 12m</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center gap-2 mb-3">
+<span class="px-2 py-0.5 rounded bg-error-container/20 text-error text-[10px] font-label-sm uppercase tracking-wider">Risk Management</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4 group-hover:text-primary transition-colors leading-tight">Smart Contract Auditing: Vulnerability Patterns</h3>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/20 bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a cyber security expert with a focused, serious expression. Neutral dark background with subtle blue-toned rim lighting. High-end, technical corporate style. The composition is clean and trustworthy, suitable for a security instructor on a high-end platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEv11PgCFYF2J_pNfmy_pELBvMhFGXfnbtgWBktg75v87D3h5Z25KDLQSISh4Wjrq93s_ixphGWWIhNwVqnvk-Zm2GN4rey0ZQBnlsfD4mM3NiLvbBG5XpphYCAbZ_FtHXb0vTjWR14hvWOEXNAsruZHMibF7I9Ss2-n_aROUCfuyjkd2YVm7Z1C0bCjiOhI8yEsoPO0v04TvYW8-Kveo9dYRTOIe6UgvtNR4TjtaBLT3GFbP26Wo7V2Ldwgtp9MDH0abp3Dw603yN"/>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">David Kwon</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Security Researcher</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-primary-container font-bold">7.0 SOL</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">≈ $1,050 USD</p>
+</div>
+</div>
+</div>
+<div class="h-1 w-0 bg-primary-container transition-all duration-500 group-hover:w-full"></div>
+</div>
+<!-- Course Card 4 -->
+<div class="glass-card rounded-[2rem] overflow-hidden flex flex-col group cursor-pointer transition-all duration-500 hover:-translate-y-2">
+<div class="relative aspect-video">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="Stylized 3D rendering of an old-school orange Macintosh computer floating in a digital void, surrounded by glowing pixel icons and data envelopes. The aesthetic is playful yet highly technical, with a focus on glass textures and soft backlighting. Sharp highlights define the edges, and the atmosphere is high-contrast and premium." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDC4yemS_C7WdpwDX0M3-keYeDO0ELshX1YXqQbToFPa8OI0Izk3elIc67lpFsKZ7feGHF7GyAlkcCFSpzG3tOXimuFDcjoY0idUNRBgM4igMdAotUZBleWDbiuEt4XU0853WlQoq9scb9sqvSiHoydnzstBbDz8zmXFscpTK0HKWENbA49JjHtvhF7WFcnauudv73RmZ09Ko1FVUsKqYd3IKUCOB9jYHGrXZI6o16eDKC1kxiWPFhGQSBHdLQo8GFdq4KIzRNw_0ad"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<div class="absolute top-4 right-4 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/10 group-hover:bg-primary-container group-hover:border-primary transition-all duration-300">
+<span class="material-symbols-outlined text-white text-[20px]" data-weight="fill">lock</span>
+</div>
+<div class="absolute bottom-4 left-4 flex items-center gap-2">
+<span class="px-3 py-1 rounded-lg bg-black/40 backdrop-blur-md text-white font-label-sm text-label-sm border border-white/10">1h 15m</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center gap-2 mb-3">
+<span class="px-2 py-0.5 rounded bg-primary-container/20 text-primary-fixed text-[10px] font-label-sm uppercase tracking-wider">Web3 Basics</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4 group-hover:text-primary transition-colors leading-tight">Intro to Decentralized Storage Systems</h3>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/20 bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a modern educator in a creative, industrial-style loft. The person has a friendly, welcoming expression. The lighting is warm and natural, suggesting an approachable and authentic personality. The background features technical books and art pieces, blending technology and creativity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs-0TaocODe3TKMxTpK3HpNJ19W2VSYYQ2oOmLTtkSRY0oB6B_G_f2Pm5J-mhlMiT5yBqRpXanceDAjcNKTl7647ZMBh5zqBdQ2dYQv1rcoOTuj7NKSdLy5B5vwozpwezOHSf8uTFSp-Ym541M4KiVzjm-hKq4h7NFH5hmhKb3ZIycN3Bw-RyziOr-AmSUhSrG46iuTJhEwi0m8dPhSXP6SYqNwvRGi6e7WNrAY7zfLd1Q270RfKkuHzSAzLF0Nw384xsrAxfnMTXD"/>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">Alex Rivera</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Core Dev</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-primary-container font-bold">0.8 SOL</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">≈ $115 USD</p>
+</div>
+</div>
+</div>
+<div class="h-1 w-0 bg-primary-container transition-all duration-500 group-hover:w-full"></div>
+</div>
+</section>
+<!-- Pagination / Load More -->
+<div class="mt-20 flex justify-center">
+<button class="px-12 py-4 rounded-full bg-surface-container-high border border-white/10 font-label-sm text-label-sm text-on-surface hover:bg-primary-container hover:text-on-primary-container hover:border-primary-container transition-all flex items-center gap-3">
+<span>Explore More Courses</span>
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</main>
+</div>
+<!-- Footer Shell -->
+<footer class="bg-surface-container-lowest full-width py-12 mt-20 border-t border-outline-variant/20">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop max-w-container-max-width mx-auto gap-8">
+<div class="flex flex-col gap-4">
+<span class="font-headline-md text-headline-md text-on-surface font-bold tracking-tighter">Curio</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">© 2024 Curio. Built on decentralized infrastructure for the next generation of creators.</p>
+</div>
+<div class="flex flex-wrap gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Documentation</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Security</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Infrastructure Status</a>
+</div>
+</div>
+</footer>
+<script>
+    // Simple micro-interactions for active state demonstration
+    document.querySelectorAll('.glass-card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.classList.add('active-nav-glow');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('active-nav-glow');
+      });
+    });
+
+    // Simulated filter toggles
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', (e) => {
+        const span = e.target.nextElementSibling;
+        if(e.target.checked) {
+          span.classList.add('text-primary');
+        } else {
+          span.classList.remove('text-primary');
+        }
+      });
+    });
+  </script>
+</body></html>

@@ -1,0 +1,79 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+/* Shared glassmorphic surface used across cards, panels and modals
+   (curio_system/DESIGN.md "Elevation & Depth") */
+.glass-panel {
+  background: rgba(22, 22, 22, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 182, 147, 0.3);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #353534;
+  border-radius: 10px;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Shelby video player controls — enlarged buttons/scrubber for a more
+   YouTube-like, easier-to-hit bottom bar. Targets the player's stable
+   `sp-*` skinning hooks (see @shelby-protocol/player component source)
+   rather than internal markup, so it survives package upgrades. */
+.sp-play-button,
+.sp-volume-button-button,
+.sp-pip-button,
+.sp-settings-menu-button,
+.sp-fullscreen-button {
+  padding: 0.75rem;
+}
+
+.sp-play-button-icon,
+.sp-volume-button-icon,
+.sp-pip-button-icon,
+.sp-settings-menu-button-icon,
+.sp-fullscreen-button-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.sp-time-slider-track {
+  height: 0.3125rem;
+}
+
+.sp-volume-button-slider-track {
+  height: 0.25rem;
+}
+
+.sp-volume-button-slider-thumb {
+  height: 0.75rem;
+  width: 0.75rem;
+}

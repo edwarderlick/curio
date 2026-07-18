@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Curio | Decentralized Learning</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline-variant": "#5a4136",
+                        "secondary-fixed-dim": "#87dd00",
+                        "tertiary": "#ddb7ff",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary-fixed": "#9bfc00",
+                        "on-tertiary-fixed-variant": "#6900b3",
+                        "on-secondary-container": "#427000",
+                        "primary-fixed": "#ffdbcc",
+                        "on-primary-fixed": "#351000",
+                        "outline": "#a98a7d",
+                        "surface": "#131313",
+                        "tertiary-fixed": "#f0dbff",
+                        "on-secondary-fixed": "#0f2000",
+                        "on-tertiary-fixed": "#2c0051",
+                        "secondary-container": "#9bfc00",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#2e4f00",
+                        "on-primary-fixed-variant": "#7a3000",
+                        "inverse-primary": "#a04100",
+                        "tertiary-container": "#bd79ff",
+                        "primary-fixed-dim": "#ffb693",
+                        "surface-container": "#201f1f",
+                        "on-surface-variant": "#e2bfb0",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#1c1b1b",
+                        "error-container": "#93000a",
+                        "on-background": "#e5e2e1",
+                        "primary": "#ffb693",
+                        "surface-variant": "#353534",
+                        "secondary": "#ffffff",
+                        "on-tertiary-container": "#4a0081",
+                        "inverse-on-surface": "#313030",
+                        "on-secondary": "#1e3700",
+                        "surface-container-high": "#2a2a2a",
+                        "on-primary-container": "#572000",
+                        "surface-tint": "#ffb693",
+                        "background": "#131313",
+                        "surface-bright": "#3a3939",
+                        "on-surface": "#e5e2e1",
+                        "on-error": "#690005",
+                        "on-primary": "#561f00",
+                        "surface-container-highest": "#353534"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "container-max-width": "1440px",
+                        "margin-mobile": "20px",
+                        "gutter": "24px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "label-sm": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(22, 22, 22, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(255, 182, 147, 0.3);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Header / TopNavBar -->
+<header class="bg-surface/70 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-white/10 shadow-xl">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max-width mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary-container">Curio</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary border-b-2 border-primary pb-1 font-body-md" href="#">Explore</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md" href="#">Creators</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md" href="#">Leaderboard</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined text-xl">nest_audio</span>
+<span class="font-body-md">Creator Studio</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-white/5 rounded-full cursor-pointer">notifications</span>
+<span class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-white/5 rounded-full cursor-pointer">account_balance_wallet</span>
+</div>
+<button class="bg-primary-container text-on-primary-container font-bold px-6 py-2 rounded-xl hover:scale-95 transition-transform">
+                    Connect Wallet
+                </button>
+</div>
+</div>
+</header>
+<main class="relative overflow-hidden">
+<!-- Hero Section -->
+<section class="relative pt-20 pb-32 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center min-h-[819px]">
+<div class="lg:col-span-7 z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/10 border border-secondary-container/20 text-secondary-fixed mb-6">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-sm">DECENTRALIZED STREAMING</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-white mb-6 leading-tight">
+                    Master the Future of <span class="text-primary text-glow">Skill Mastery</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl">
+                    Learn from world-class creators on a decentralized platform. Pay per lecture. Your content lives on-chain, secured for eternity.
+                </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary-container text-on-primary-container font-bold px-8 py-4 rounded-xl flex items-center gap-3 group transition-all hover:pr-10">
+                        Explore Lectures
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button class="border border-outline px-8 py-4 rounded-xl font-bold hover:bg-white/5 transition-colors">
+                        Start Creating
+                    </button>
+</div>
+</div>
+<!-- Floating 3D Elements Area -->
+<div class="lg:col-span-5 relative h-full min-h-[400px] flex items-center justify-center">
+<div class="absolute inset-0 z-0">
+
+</div>
+<div class="relative z-10 glass-panel rounded-3xl p-8 w-full max-w-md transform hover:rotate-2 transition-transform duration-500 shadow-2xl">
+<img class="w-full h-auto drop-shadow-[0_20px_50px_rgba(255,107,0,0.3)]" data-alt="A stylized 3D orange vintage computer with floating digital icons, letters and pixel-art elements like orange slices and floating smileys. The background is a clean, dark-themed studio setting with soft glowing orange ambient light reflecting off the metallic and plastic surfaces of the high-end workstation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbLsA8lWwthuZTMPFbvaBA0SAlInnSl61-YlOsqIFalJAQEp0L_N7fOIQOGwvsxNNayLIMCjLGNz0QdcdC-CeykAnL3jYvCQvOUvn7BV1RYMdxntHpBfSi93Ve7Vp6mThkYwjEjOsziJUYv1TlAGV7Qx4VmOAFvOcGvoo8c1szRhmPSJXphHvNfGCCfRDYN5MkDC5zzI7VJQqHpyanhERegtNFzL09MV4WNWWNvMZX7JjmS-CIu5U4dJNRr4Rbdl2TrqRxYoQyvRAV"/>
+<div class="mt-6 flex justify-between items-end">
+<div>
+<p class="font-label-sm text-primary mb-1">LIVE NOW</p>
+<h3 class="font-headline-md text-headline-md text-white">Solana Architecture</h3>
+</div>
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-surface bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female tech educator with a warm smile, set against a vibrant neon orange background with high-end photographic lighting. Modern and clean corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXfzizmgl_qa_ncDf-eTl4k-fSYxL9UGXAlJk1Zm_ZVrddY7P7KscawOf5XXGcvksm2S2FXXbQXbBKQaZxVygnXxv_ORw1Yc9Pw6e9hSA0gZ6ZYtdHAhU8WTj1UYeWJCUzboxRHBzLqB0u5DZPLou10LA5Yx56Bm4BJMuh3aWeqAJbijMzvDc8AKiCAO_KeBZOaeu85XtvsShER9VyW_KV95nGPkAgq-9vBEOfRdCgNP0_URt5exH3Hb1ZZKAMudGh755VImXkIt93"/>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-surface bg-surface-container-high flex items-center justify-center">
+<span class="text-label-sm text-primary">+12</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Strip -->
+<section class="border-y border-white/5 bg-surface-container-lowest/50 py-12 relative z-10 backdrop-blur-sm">
+<div class="max-w-container-max-width mx-auto px-margin-desktop grid grid-cols-2 lg:grid-cols-4 gap-8">
+<div class="text-center group">
+<p class="font-label-sm text-on-surface-variant mb-2">ACTIVE CREATORS</p>
+<h2 class="font-display-lg text-display-lg text-white group-hover:text-primary transition-colors">50k+</h2>
+</div>
+<div class="text-center group">
+<p class="font-label-sm text-on-surface-variant mb-2">MICRO LECTURES</p>
+<h2 class="font-display-lg text-display-lg text-white group-hover:text-primary transition-colors">200k+</h2>
+</div>
+<div class="text-center group">
+<p class="font-label-sm text-on-surface-variant mb-2">HOURS STREAMED</p>
+<h2 class="font-display-lg text-display-lg text-white group-hover:text-primary transition-colors">1M+</h2>
+</div>
+<div class="text-center group">
+<p class="font-label-sm text-on-surface-variant mb-2">ON-CHAIN TRANSACTIONS</p>
+<h2 class="font-display-lg text-display-lg text-white group-hover:text-primary transition-colors">5M+</h2>
+</div>
+</div>
+</section>
+<!-- How it Works -->
+<section class="py-32 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto">
+<div class="text-center mb-20">
+<h2 class="font-headline-lg text-headline-lg text-white mb-4">How it works</h2>
+<div class="w-20 h-1 bg-primary-container mx-auto rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Step 1 -->
+<div class="glass-panel p-8 rounded-3xl group hover:border-primary/50 transition-all">
+<div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+</div>
+<span class="font-label-sm text-primary mb-2 block">STEP 01</span>
+<h3 class="font-headline-md text-headline-md text-white mb-4">Connect Wallet</h3>
+<p class="font-body-md text-on-surface-variant">Seamlessly link your Solana or Ethereum wallet to start your learning journey.</p>
+</div>
+<!-- Step 2 -->
+<div class="glass-panel p-8 rounded-3xl group hover:border-primary/50 transition-all">
+<div class="w-16 h-16 rounded-2xl bg-secondary-container/10 flex items-center justify-center mb-6 text-secondary-fixed group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">search</span>
+</div>
+<span class="font-label-sm text-primary mb-2 block">STEP 02</span>
+<h3 class="font-headline-md text-headline-md text-white mb-4">Pick a Lecture</h3>
+<p class="font-body-md text-on-surface-variant">Browse thousands of micro-lectures from top-tier experts in web3, AI, and design.</p>
+</div>
+<!-- Step 3 -->
+<div class="glass-panel p-8 rounded-3xl group hover:border-primary/50 transition-all">
+<div class="w-16 h-16 rounded-2xl bg-tertiary/10 flex items-center justify-center mb-6 text-tertiary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">lock_open</span>
+</div>
+<span class="font-label-sm text-primary mb-2 block">STEP 03</span>
+<h3 class="font-headline-md text-headline-md text-white mb-4">Unlock</h3>
+<p class="font-body-md text-on-surface-variant">Pay only for what you learn. Instant micro-payments secure your permanent access.</p>
+</div>
+<!-- Step 4 -->
+<div class="glass-panel p-8 rounded-3xl group hover:border-primary/50 transition-all">
+<div class="w-16 h-16 rounded-2xl bg-primary-container/10 flex items-center justify-center mb-6 text-primary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">play_circle</span>
+</div>
+<span class="font-label-sm text-primary mb-2 block">STEP 04</span>
+<h3 class="font-headline-md text-headline-md text-white mb-4">Stream Instantly</h3>
+<p class="font-body-md text-on-surface-variant">High-fidelity, low-latency streaming experience built for the modern learner.</p>
+</div>
+</div>
+</section>
+<!-- Featured Lectures Carousel -->
+<section class="py-20 bg-surface-container-low/40">
+<div class="max-w-container-max-width mx-auto px-margin-desktop mb-10 flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-white mb-2">Featured Lectures</h2>
+<p class="font-body-md text-on-surface-variant">Trending topics across the decentralized ecosystem.</p>
+</div>
+<div class="flex gap-2">
+<button class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="flex gap-6 overflow-x-auto px-margin-desktop no-scrollbar pb-10">
+<!-- Card 1 -->
+<div class="min-w-[340px] glass-panel rounded-2xl overflow-hidden group">
+<div class="h-48 relative">
+<img class="w-full h-full object-cover" data-alt="A futuristic 3D digital scene representing advanced blockchain networking with glowing nodes, purple and orange light trails, and a high-end glassmorphic aesthetic. Sophisticated lighting with deep shadows and vibrant accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNyjgd13dQiCi7BjUgRyYGhKbu64WxH_9oWNzKFoswGGEE-ek7yhIh8F0evFhZIput5iR0jOH42RZQTK66h6RgPDaRZF8Mi2QEa9xmq0cwwASR3MuZkABkAAb8KuH5IndwXGKr_64ESKyaJfUsUf44ZhxT_TmgD1aLpJZbPbpOy3vm7BHkTkFOJgHMmcaCNa2SyP2uq1wrgfGub3ClKzOINAkuYubD7zrJH5alT3FTAj4JeGsK1ptqJIV56qSS619LEkwnnseptvRX"/>
+<div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-label-sm text-white">12:45</div>
+<div class="absolute top-3 left-3 bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">TRENDING</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 mb-3">
+<img class="w-6 h-6 rounded-full" data-alt="A portrait of a male tech influencer with modern glasses and short hair, against a soft-focus office background with citrus-colored ambient light. Professional and approachable." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBE2KJ6p0ZppE0Ca2tUkhDbparc0w2w7Ww0O1M3wUdU85qO-18S9lz8EkBpIreBkxKREwAbfQmjcMh7I5C34uDz3Rro3SjYpJqq9nx3AvSUJXpdExwedTBS0bIX18vNywngiXHsGd5yeln31wP4guQCbRu19eWzYv3BYvSlVC7XZm8Vh9U40tyD0-NeR9RtPvV3l2JkNggxgVv3axZCuG2cS6I7ozdXX10hufwY4m6_KiehbmPOaYdDK-hX2jmyzFvPHHsAa6XafL27"/>
+<span class="font-label-sm text-on-surface-variant">Alex Rivera</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-white mb-4 line-clamp-1">Zero Knowledge Proofs Explained</h4>
+<div class="flex justify-between items-center">
+<div class="flex gap-1 text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span class="font-bold">0.12 SOL</span>
+</div>
+<div class="flex gap-2 opacity-60">
+<span class="material-symbols-outlined text-sm">token</span>
+<span class="material-symbols-outlined text-sm">security</span>
+</div>
+</div>
+</div>
+<div class="h-1 bg-surface-container-high w-full">
+<div class="h-full bg-primary-container w-[65%]"></div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="min-w-[340px] glass-panel rounded-2xl overflow-hidden group">
+<div class="h-48 relative">
+<img class="w-full h-full object-cover" data-alt="High-fidelity 3D rendering of complex gear systems and clockwork in vibrant orange and chrome, representing technical efficiency and precision. Minimalist dark background with cinematic depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6Vqms1gGPP7lvDf-xR_pofbDfUxelmeAJQz0EK0ddlWNpfVvelWJewlUs-0ujJ4U6NKdtVizN6bmiyUGcOwj2c_uBFNzlOJ3XetkPQRjIFcV7DEu425iyzB-CTzD55AZGyAkBkjFLfpVvKuqiwa-xSEgf8j5nsWvsz6zoixZz1CN_1jpPDg2kFZTlDWxsyfnvUaDZVcUi9RcyDEsIhov8Gzffq6wU03gKdr02aMNU0ohsFFeUZkMe8OxJHnA5oSteZ0RA9-oYMUA9"/>
+<div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-label-sm text-white">08:20</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 mb-3">
+<img class="w-6 h-6 rounded-full" data-alt="A smiling female developer with a sleek headset, photographed in a high-key studio with orange and purple accent lighting. Clean professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCx-H76YGe5luj6gUYnEEW_c8XQ2LPzl_bL4EMfJtdQRdhnxX-POQKHkQfHYPXO7bdBEU389MdgvhlLLW8Y0eoQTx-SbGjcx-rs7WayyoAOqXIUzMuq8DDwp1C_5FsLNUn5sIeERSJ8UuvaLt9pQj8zr5wdlL5u4ep4FfTXM9YBek8pRwkQVifl16c0OC17_dkXqjt9SwWZYnYkvjK4aNRU2ivWU71ByLDy-ba5EWJY1EwlXuYT21MavEYeQpNpJEPEB8ZmdrehR7Qc"/>
+<span class="font-label-sm text-on-surface-variant">Sarah Chen</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-white mb-4 line-clamp-1">Advanced Smart Contract Audits</h4>
+<div class="flex justify-between items-center">
+<div class="flex gap-1 text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span class="font-bold">0.05 ETH</span>
+</div>
+<div class="flex gap-2 opacity-60">
+<span class="material-symbols-outlined text-sm">atm</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="min-w-[340px] glass-panel rounded-2xl overflow-hidden group">
+<div class="h-48 relative">
+<img class="w-full h-full object-cover" data-alt="Abstract 3D digital art featuring flowing ribbons of data in neon green and white, symbolizing high-speed information flow and decentralized data. Modern tech-focused visual style with sharp details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCd28FLnq23PX-QdNpUnOe5GbVDX1kwey02D8doAWU3TE7mu3DEwuyYiT_O-xi6Npx-hy_xfZkAk3-qbtyV3AfK2Y7DlnzmxyCg_2U2rPy-BJONkmvFITvI52Lg2nVhZQlbXBRHJXzLD54IzKPC_7FI_sQMy0vzPbcDEWDP9DR2dE2k_rdogiFMoUToQXMtzmfM1rKYjahHkgUy1xxj1TXi6bQDSr3NJJD_cgvf_hp8wJV-CFwKhcigRcHEkwj2D3Yw0jVWMobFidpu"/>
+<div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-label-sm text-white">15:10</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 mb-3">
+<img class="w-6 h-6 rounded-full" data-alt="Professional portrait of a male data scientist, clean-shaven, wearing a dark polo shirt against a minimalist dark grey background with subtle lighting. High-end corporate look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzGKQkYkvl5OkHDEhoey-fMzI4Fii1f_f3GIIjU3ahDgo_l7tJSspbf1qLFPvKxnV379h4hTIBQF1yMM3aBPUPWGUHBs1I2f8kdWmInZ6pd_pcZ0JQOV7rPb8sm0HGYBa5rmo0oX_CputBpwMzmVj26m8Bfll4fa8SrEm2p4F8Jx5oyLfQK7dP-jy0xvYr3pYsuLsMF7zl0EiHH7eu2LvdgNRoVr6r0n9DuA8z361--q6i-VoBo7gujKT5IKDlKwgp_tQ26BKoElmO"/>
+<span class="font-label-sm text-on-surface-variant">David Marks</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-white mb-4 line-clamp-1">Decentralized Data Models</h4>
+<div class="flex justify-between items-center">
+<div class="flex gap-1 text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span class="font-bold">15.0 APT</span>
+</div>
+<div class="flex gap-2 opacity-60">
+<span class="material-symbols-outlined text-sm">api</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="min-w-[340px] glass-panel rounded-2xl overflow-hidden group">
+<div class="h-48 relative">
+<img class="w-full h-full object-cover" data-alt="A 3D isometric representation of a virtual classroom with floating holographic screens and orange geometric sculptures. The aesthetic is clean, corporate, and highly technological with soft global illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIF8X-qXkvUaFEtmSXkj66ofvOUbqnkYqbHLKi1znb3ZwJ-YEgP6pn_kvQ8QlWesNUL7IItoBwCXCMLPoZ9OCFBlIQbohIRJ6BCWCcMNoPrLEqXi7vtKMnLcgUom-HxGl5X7yTEXMyVhWsorBK7pMpZrMJxXEYjXondM_pWp1L5LF4KHqW4cDGGnUuGZWP6OAeJa66V2c6dz42tHr32rp6Umh8ps3Lw166kZWsXBvNqz8Xb7oYOJemnAEWVcgx15s6UPD-BjT5kLEL"/>
+<div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-label-sm text-white">22:00</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 mb-3">
+<img class="w-6 h-6 rounded-full" data-alt="Portrait of a female AI researcher with stylish blonde hair and a professional blazer, lit with cool blue and warm orange studio lights for a high-contrast editorial look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZH-20gwKMpPEjg78wpJkLldBLtlj6_qPMXbQcAalrYeKzVEso0KXemT6RacYgkjrWkEBbsnvXX86KE59NTWmtHDubbB_wjjBJ2bSE5fGUF3yYs3M9gg5mgHbpJmNJhAVG3Wl60Ad4b1ysZR_QrgDv6GROSv2G9OeBP9rF5LpCMVEo-vXBHwtF8_VJuw_687XYAV75qBCT75doUK1RZr-QeQgW8-uv-QcUu8ALa3DMZuto4_vy2rLfD54id5pzGvyTuxwwjKiqgj2y"/>
+<span class="font-label-sm text-on-surface-variant">Dr. Elena Vos</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-white mb-4 line-clamp-1">AI Ethics on the Blockchain</h4>
+<div class="flex justify-between items-center">
+<div class="flex gap-1 text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span class="font-bold">0.80 SOL</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Creators -->
+<section class="py-32 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto">
+<div class="flex flex-col lg:flex-row gap-16 items-start">
+<div class="lg:w-1/3">
+<h2 class="font-headline-lg text-headline-lg text-white mb-6">Learn from the Vanguard</h2>
+<p class="font-body-lg text-on-surface-variant mb-8">We partner with global experts who are actively building the future of the decentralized web.</p>
+<button class="flex items-center gap-2 text-primary font-bold hover:underline">
+                        Apply to be a creator
+                        <span class="material-symbols-outlined">arrow_outward</span>
+</button>
+</div>
+<div class="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+<!-- Creator 1 -->
+<div class="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer">
+<img class="w-20 h-20 rounded-xl object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="Professional studio portrait of a male creative director in a black turtleneck, sharp facial features, set against a dark background with orange rim lighting. Elite design aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn_LPGl7NYE_rhs2jdaDz57yFpG0ajb__M-1P01OdFJKm09dHXUppHPDLmsyfneXtobvaBu3tg8G7iI54uLCEqUmwlfVJwukxLLjQ_Ncz5BLUSY-U-oqUe5v8YihaywpYs1n8zGWKfUnpaP2hgQk63ajgvhWpCPNeu0bjw6Es5rzOOxHWBMzV-p7XdecN2NtligoOqOTzREIerZ8uY90GDVttzNegvBDlF-7kA1xAswy7uAwRXOI14iyiUxVgV6cGR-qvt5ZK05wVr"/>
+<div>
+<h5 class="font-headline-md text-body-lg text-white">Julian Vane</h5>
+<p class="text-label-sm text-on-surface-variant mb-2">Lead Architect @ Solana</p>
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed"></div>
+<span class="text-[10px] text-secondary-fixed uppercase tracking-widest font-bold">Expert</span>
+</div>
+</div>
+</div>
+<!-- Creator 2 -->
+<div class="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer">
+<img class="w-20 h-20 rounded-xl object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="Portrait of a female blockchain engineer with curly hair and a modern aesthetic, wearing a white techwear-style hoodie in a futuristic lab environment with subtle neon lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARHVzukEnqWSTsdovEUZwVWlJW7-0q3ydO-HmxRbgkCKHoLfB0HqG5PpRFpuPG1o2_4Xhp4Mo6vekyBG7tOBpjJztV8VQq91YWpG1nj6nDpD7amLtftp1ijx-NZY2EXnD6SDDkUiRijRPbYolX2jkJIdn_3w6Mq6uMOKCo-9Rr63KA_kY8v6JjcSc8wU7d10dktuhp8FNxktY-xXXAY31IJ_LUr4Y_4fQrlbLtySxP6LXUSswBRvLkJUsWvrtHyQCHnoBCtR7aol-i"/>
+<div>
+<h5 class="font-headline-md text-body-lg text-white">Maya Kotto</h5>
+<p class="text-label-sm text-on-surface-variant mb-2">Rust Dev / Auditor</p>
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed"></div>
+<span class="text-[10px] text-secondary-fixed uppercase tracking-widest font-bold">Expert</span>
+</div>
+</div>
+</div>
+<!-- Creator 3 -->
+<div class="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer">
+<img class="w-20 h-20 rounded-xl object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="A portrait of a male digital artist with a creative beard and artistic attire, illuminated by soft colored ambient light in a minimal studio. Professional and visionary." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhngIxbMaS9hsLIYJLowHgQKC29PlEiBHi1AjYgUKi9gfg-mLLaj7u0LdqWuHH18lFYCd6rBpQDRG_FfKrZgBfg3FRa2R59IbnfZWRm_iw0zLkPcDdYzzvKQsC-oRmlR9R97xT6LH1801nuz8Cig6VncBqs2hL0B5lSqoe6I4smHjqzHBp5j-3MKRZkjPnG2xCAq__OloiixuQiQCvC-On9ZixWDFO2VSh4Uxolju48VJbcUyY7Z942Hfig3iABlr0FO7eO8Q0IDLh"/>
+<div>
+<h5 class="font-headline-md text-body-lg text-white">Soren Berg</h5>
+<p class="text-label-sm text-on-surface-variant mb-2">NFT Strategist</p>
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+<span class="text-[10px] text-primary-container uppercase tracking-widest font-bold">Featured</span>
+</div>
+</div>
+</div>
+<!-- Creator 4 -->
+<div class="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer">
+<img class="w-20 h-20 rounded-xl object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="Close up portrait of a female UI/UX designer with a sharp, modern look, wearing minimal jewelry and a black shirt. Set against a high-contrast dark background with warm highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWGo27tgy8EqGlcldpT7ZvvQJwFez5Xk9tkXgjgsrWIK6yUof2MaNDpZdNSDzPBZ_uOpKgM_h9KiRl3OjxwS6ISv9n6k59FjTyqIAgBzGZ-jT01WJkM__igjbTYc41oOQI7tZnawd2sMg3JJ-UTfWNoge4HH6RIExtcXyRjV7RpU7zznvawJYbXXGe9hK7L4YiM9eRNR1u0LXsKavwD8RD6f_R3neIfgCXk2P9pr2AJ8zeH0MrqUldrN2WZwWBLiQwZC1uNGRX9XJH"/>
+<div>
+<h5 class="font-headline-md text-body-lg text-white">Lara Croft</h5>
+<p class="text-label-sm text-on-surface-variant mb-2">Senior Designer</p>
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+<span class="text-[10px] text-primary-container uppercase tracking-widest font-bold">Featured</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto">
+<div class="glass-panel p-12 md:p-20 rounded-[40px] text-center relative overflow-hidden">
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[120px] -mr-48 -mt-48"></div>
+<div class="relative z-10">
+<h2 class="font-display-lg text-display-lg text-white mb-6">Ready to own your knowledge?</h2>
+<p class="font-body-lg text-on-surface-variant mb-10 max-w-2xl mx-auto">Join a global community of curious minds and expert builders. Your first lecture is waiting on the chain.</p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<button class="bg-primary-container text-on-primary-container font-bold px-10 py-4 rounded-xl text-lg hover:scale-105 transition-transform">Get Started Today</button>
+<button class="bg-white/5 border border-white/10 text-white font-bold px-10 py-4 rounded-xl text-lg hover:bg-white/10 transition-all">Documentation</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest full-width py-12 mt-20 border-t border-outline-variant/20">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop max-w-container-max-width mx-auto gap-8">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="font-headline-md text-headline-md text-on-surface font-bold tracking-tighter">Curio</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs text-center md:text-left">© 2024 Curio. Built on decentralized infrastructure.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">Documentation</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">Security</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">Infrastructure Status</a>
+</div>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">share</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">rss_feed</span>
+</a>
+</div>
+</div>
+</footer>
+<!-- Custom Cursor for interactivity -->
+<div class="fixed pointer-events-none w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] z-0 -translate-x-1/2 -translate-y-1/2 hidden md:block" id="cursor-glow"></div>
+<script>
+        // Micro-interaction: Mouse glow effect
+        const glow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        // Lecture Carousel simple scroll handling
+        const carousel = document.querySelector('.no-scrollbar');
+        const scrollNext = document.querySelector('button span:contains("chevron_right")')?.parentElement;
+        const scrollPrev = document.querySelector('button span:contains("chevron_left")')?.parentElement;
+
+        if(scrollNext && carousel) {
+            scrollNext.addEventListener('click', () => {
+                carousel.scrollBy({ left: 360, behavior: 'smooth' });
+            });
+        }
+        if(scrollPrev && carousel) {
+            scrollPrev.addEventListener('click', () => {
+                carousel.scrollBy({ left: -360, behavior: 'smooth' });
+            });
+        }
+    </script>
+</body></html>

@@ -1,0 +1,11 @@
+node_modules
+dist
+*.log
+
+# Env
+.env
+.env.*.local
+
+# v1 off-chain index data — real per-developer catalog state, not source
+data/catalog.json
+data/thumbnails/
