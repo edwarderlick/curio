@@ -1,5 +1,5 @@
 import { Network } from "@aptos-labs/ts-sdk";
-import { getShelbyBlobExplorerUrl } from "@shelby-protocol/sdk/browser";
+import { getShelbyAccountExplorerUrl } from "@shelby-protocol/sdk/browser";
 import { API_BASE_URL } from "@/lib/apiBase";
 
 /**
@@ -30,13 +30,17 @@ export function blobNameFromManifestPath(manifestPath: string): string {
   return manifestPath.slice(manifestPath.indexOf("/") + 1);
 }
 
-/** Deep link straight to this blob's page on Shelby's own explorer, rather
+/** Links to this blob's storage account on Shelby's own explorer, rather
  * than dumping the user on its homepage where they'd have to paste the
- * account address in themselves. */
+ * address in themselves — from there the account's Folder View lists every
+ * blob it owns. The SDK also exposes getShelbyBlobExplorerUrl() for a
+ * per-blob deep link, but that 404s against the live explorer (confirmed
+ * live — nested-path blob names don't resolve the way the SDK encodes
+ * them), so this sticks to the account-level link Shelby's own docs
+ * describe as the supported way to browse a given account's blobs. */
 export function getBlobExplorerUrl(manifestPath: string): string {
   const accountAddress = manifestPath.slice(0, manifestPath.indexOf("/"));
-  const blobName = blobNameFromManifestPath(manifestPath);
-  return getShelbyBlobExplorerUrl(Network.SHELBYNET, accountAddress, blobName);
+  return getShelbyAccountExplorerUrl(Network.SHELBYNET, accountAddress);
 }
 
 /** Inverse of getBlobUrl: recovers `<account>/<blobName>` from a blob URL,
