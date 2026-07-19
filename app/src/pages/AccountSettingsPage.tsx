@@ -1,4 +1,8 @@
-import { useWalletStore } from "@/features/wallet/store";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useConnectedAddress, useWalletStore } from "@/features/wallet/store";
+import { useCreatorProfile } from "@/lib/index/hooks";
+import { saveCreator } from "@/lib/index/catalogClient";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Button } from "@/components/ui/Button";
 import { FaucetButton } from "@/features/wallet/FaucetButton";
@@ -11,6 +15,69 @@ const CHAIN_META: Record<ChainId, { label: string; icon: string; tone: string; n
   ethereum: { label: "Ethereum", icon: "hexagon", tone: "text-tertiary", network: ETHEREUM_NETWORK_LABEL },
   solana: { label: "Solana", icon: "bolt", tone: "text-tertiary", network: SOLANA_NETWORK_LABEL },
 };
+
+/**
+ * If this wallet already published as a creator, prompts to add any
+ * chains connected *since* — payout addresses are only recorded for
+ * whichever chains were connected at publish time (see Step5Review), so a
+ * creator who connects Ethereum/Solana afterward can't get paid on them
+ * for existing lectures until this runs. Safe to call anytime: the server
+ * only ever fills in chains that were still null, never overwrites an
+ * already-set payout address (api/_lib/db.ts's upsertCreator).
+ */
+function SyncPayoutAddresses() {
+  const queryClient = useQueryClient();
+  const connectedAddress = useConnectedAddress();
+  const connections = useWalletStore((s) => s.connections);
+  const { data } = useCreatorProfile(connectedAddress ?? undefined);
+  const [syncing, setSyncing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const creator = data?.creator;
+  if (!creator) return null;
+
+  const missingChains = (Object.keys(CHAIN_META) as ChainId[]).filter(
+    (chain) => connections[chain].address && !creator.payoutAddress[chain],
+  );
+  if (missingChains.length === 0) return null;
+
+  async function handleSync() {
+    if (!creator) return;
+    setSyncing(true);
+    setError(null);
+    try {
+      await saveCreator({
+        ...creator,
+        payoutAddress: {
+          aptos: connections.aptos.address ?? creator.payoutAddress.aptos,
+          ethereum: connections.ethereum.address ?? creator.payoutAddress.ethereum,
+          solana: connections.solana.address ?? creator.payoutAddress.solana,
+        },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["creator", connectedAddress] });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  return (
+    <GlassPanel className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <p className="font-bold text-white">Payout addresses out of date</p>
+        <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">
+          {missingChains.map((c) => CHAIN_META[c].label).join(", ")} {missingChains.length > 1 ? "aren't" : "isn't"} linked yet — buyers on{" "}
+          {missingChains.length > 1 ? "those chains" : "that chain"} can't pay for your lectures until you sync.
+        </p>
+        {error && <p className="font-label-sm text-label-sm text-error mt-1">{error}</p>}
+      </div>
+      <Button variant="secondary" size="sm" loading={syncing} onClick={handleSync} className="shrink-0">
+        Sync payout addresses
+      </Button>
+    </GlassPanel>
+  );
+}
 
 export function AccountSettingsPage() {
   const connections = useWalletStore((s) => s.connections);
@@ -27,6 +94,8 @@ export function AccountSettingsPage() {
           Manage your connected wallets. Each chain derives its own Shelby storage account independently.
         </p>
       </div>
+
+      <SyncPayoutAddresses />
 
       <GlassPanel className="p-8 space-y-4">
         {(Object.keys(CHAIN_META) as ChainId[]).map((chain) => {

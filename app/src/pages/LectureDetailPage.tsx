@@ -9,6 +9,7 @@ import { Chip } from "@/components/ui/Chip";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { CheckoutModal } from "@/features/payments/CheckoutModal";
+import { getBlobExplorerUrl } from "@/lib/shelby/blobUrl";
 
 const TABS = ["Description", "Curriculum", "Reviews"] as const;
 
@@ -131,7 +132,7 @@ export function LectureDetailPage() {
             </div>
             <a
               className="flex items-center gap-1 text-primary font-bold hover:underline shrink-0"
-              href="https://explorer.shelby.xyz/shelbynet"
+              href={getBlobExplorerUrl(lecture.manifestPath)}
               target="_blank"
               rel="noreferrer"
             >

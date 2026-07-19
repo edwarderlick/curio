@@ -1,3 +1,5 @@
+import { Network } from "@aptos-labs/ts-sdk";
+import { getShelbyBlobExplorerUrl } from "@shelby-protocol/sdk/browser";
 import { API_BASE_URL } from "@/lib/apiBase";
 
 /**
@@ -26,6 +28,15 @@ export function getBlobUrl(manifestPath: string): string {
  * as the Shelby SDK's delete calls expect it (account-relative). */
 export function blobNameFromManifestPath(manifestPath: string): string {
   return manifestPath.slice(manifestPath.indexOf("/") + 1);
+}
+
+/** Deep link straight to this blob's page on Shelby's own explorer, rather
+ * than dumping the user on its homepage where they'd have to paste the
+ * account address in themselves. */
+export function getBlobExplorerUrl(manifestPath: string): string {
+  const accountAddress = manifestPath.slice(0, manifestPath.indexOf("/"));
+  const blobName = blobNameFromManifestPath(manifestPath);
+  return getShelbyBlobExplorerUrl(Network.SHELBYNET, accountAddress, blobName);
 }
 
 /** Inverse of getBlobUrl: recovers `<account>/<blobName>` from a blob URL,

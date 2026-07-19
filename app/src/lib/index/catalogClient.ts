@@ -118,6 +118,24 @@ export async function fetchCreator(id: string): Promise<{ creator: Creator; lect
   return { creator: toCreator(data.creator), lectures: data.lectures.map((l) => toSummary(l, [data.creator])) };
 }
 
+/** Creates or updates a creator profile. Payout addresses are additive only
+ * server-side (see api/_lib/db.ts's upsertCreator) — passing every currently
+ * connected chain's address here can only fill in ones that were missing at
+ * publish time, never silently move an existing chain's payout address. */
+export async function saveCreator(creator: Creator): Promise<Creator> {
+  const res = await fetch(`${BASE}/creators`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(creator),
+  });
+  if (!res.ok) {
+    const body: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(body.error ?? `Failed to save creator: ${res.status}`);
+  }
+  const data: { creator: RawCreator } = await res.json();
+  return toCreator(data.creator);
+}
+
 export async function fetchUnlockGrants(params: { walletAddress?: string; lectureId?: string; creatorId?: string }): Promise<UnlockGrant[]> {
   const usp = new URLSearchParams();
   if (params.walletAddress) usp.set("walletAddress", params.walletAddress);
