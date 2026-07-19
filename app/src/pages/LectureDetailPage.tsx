@@ -153,8 +153,17 @@ export function LectureDetailPage() {
             <p className="text-on-surface-variant text-label-sm font-label-sm mt-2">{priceLabel.usd}</p>
           </div>
           <div className="space-y-3">
-            <Button className="w-full" size="lg" icon={<span className="material-symbols-outlined">wallet</span>} onClick={() => (connectedAddress ? setCheckoutOpen(true) : openConnectModal())}>
-              {isUnlocked ? "Already Unlocked" : "Buy with Wallet"}
+            <Button
+              className="w-full"
+              size="lg"
+              icon={<span className="material-symbols-outlined">{isUnlocked ? "play_arrow" : "wallet"}</span>}
+              onClick={() => {
+                if (isUnlocked) navigate(`/lecture/${lecture.id}/watch`);
+                else if (connectedAddress) setCheckoutOpen(true);
+                else openConnectModal();
+              }}
+            >
+              {isUnlocked ? "Watch Now" : "Buy with Wallet"}
             </Button>
           </div>
           <div className="space-y-4 pt-6 border-t border-white/5">
