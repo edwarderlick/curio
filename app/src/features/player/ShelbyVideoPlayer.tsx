@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+
 interface ShelbyVideoPlayerProps {
   src: string;
   title: string;
@@ -27,14 +29,21 @@ function mimeTypeForUrl(url: string): string | undefined {
  * special client). No HLS/adaptive-bitrate ladder to switch between since
  * uploads are a single direct-to-Shelby blob write now — see
  * features/upload/steps/Step3Processing.tsx.
+ *
+ * Forwards the underlying <video> element so a sibling component (see
+ * StreamStats) can read its buffered ranges live instead of duplicating a
+ * second video element just to observe it.
  */
-export function ShelbyVideoPlayer({ src, title }: ShelbyVideoPlayerProps) {
+export const ShelbyVideoPlayer = forwardRef<HTMLVideoElement, ShelbyVideoPlayerProps>(function ShelbyVideoPlayer(
+  { src, title },
+  ref,
+) {
   return (
     <div className="aspect-video rounded-3xl overflow-hidden glass-panel">
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video controls playsInline title={title} className="w-full h-full bg-black">
+      <video ref={ref} controls playsInline title={title} className="w-full h-full bg-black">
         <source src={src} type={mimeTypeForUrl(src)} />
       </video>
     </div>
   );
-}
+});

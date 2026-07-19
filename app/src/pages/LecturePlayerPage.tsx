@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useParams, Navigate, Link } from "react-router-dom";
 import { useLecture, useIsLectureUnlocked } from "@/lib/index/hooks";
 import { ErrorState, LoadingState } from "@/components/ui/States";
@@ -9,6 +10,7 @@ export function LecturePlayerPage() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, isError, error } = useLecture(id);
   const { isUnlocked, isLoading: grantsLoading } = useIsLectureUnlocked(id);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   if (isLoading || grantsLoading) return <LoadingState title="Loading lecture" className="max-w-container-max-width mx-auto" />;
 
@@ -36,9 +38,9 @@ export function LecturePlayerPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2">
-          <ShelbyVideoPlayer src={manifestUrl} title={lecture.title} />
+          <ShelbyVideoPlayer ref={videoRef} src={manifestUrl} title={lecture.title} />
         </div>
-        <StreamStats src={manifestUrl} />
+        <StreamStats src={manifestUrl} videoRef={videoRef} />
       </div>
 
       <div>

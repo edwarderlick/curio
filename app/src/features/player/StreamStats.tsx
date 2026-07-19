@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
 interface StreamStatsProps {
   src: string;
+  videoRef: RefObject<HTMLVideoElement | null>;
 }
 
 interface Sample {
@@ -27,6 +28,50 @@ function formatBytes(bytes: number): string {
  * seen live — this floor filters them out. */
 const MIN_SAMPLE_BYTES = 8 * 1024;
 
+/** Reads the video's own buffered ranges live off `progress`/`timeupdate`
+ * events — these fire continuously while the browser is actually fetching
+ * ahead, unlike Resource Timing entries which only land once a whole
+ * request finishes and can go quiet for long stretches once the browser
+ * has buffered comfortably ahead. This is what keeps the panel visibly
+ * "live" (fetching indicator, buffered-ahead seconds) even between the
+ * bursty network samples below. */
+function useBufferedAhead(videoRef: RefObject<HTMLVideoElement | null>) {
+  const [bufferedAheadSec, setBufferedAheadSec] = useState<number | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      const video = videoRef.current;
+      if (!video || video.buffered.length === 0) return;
+      const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+      setBufferedAheadSec(Math.max(0, bufferedEnd - video.currentTime));
+    };
+
+    let idleTimer: ReturnType<typeof setTimeout> | undefined;
+    const onProgress = () => {
+      update();
+      setIsFetching(true);
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => setIsFetching(false), 1500);
+    };
+
+    const video = videoRef.current;
+    video?.addEventListener("progress", onProgress);
+    video?.addEventListener("timeupdate", update);
+    video?.addEventListener("loadedmetadata", update);
+    update();
+
+    return () => {
+      video?.removeEventListener("progress", onProgress);
+      video?.removeEventListener("timeupdate", update);
+      video?.removeEventListener("loadedmetadata", update);
+      clearTimeout(idleTimer);
+    };
+  }, [videoRef]);
+
+  return { bufferedAheadSec, isFetching };
+}
+
 /**
  * Real network telemetry for the video's own range-request fetches, read
  * straight off the browser's Resource Timing API — not simulated. There's
@@ -36,10 +81,11 @@ const MIN_SAMPLE_BYTES = 8 * 1024;
  * and each one shows up as its own `resource` timing entry we can read
  * size/latency off of.
  */
-export function StreamStats({ src }: StreamStatsProps) {
+export function StreamStats({ src, videoRef }: StreamStatsProps) {
   const [samples, setSamples] = useState<Sample[]>([]);
   const seen = useRef(new Set<number>());
   const counter = useRef(0);
+  const { bufferedAheadSec, isFetching } = useBufferedAhead(videoRef);
 
   useEffect(() => {
     setSamples([]);
@@ -72,9 +118,25 @@ export function StreamStats({ src }: StreamStatsProps) {
 
   return (
     <GlassPanel className="p-6 space-y-3 flex flex-col">
-      <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Streaming Details</p>
+      <div className="flex items-center gap-2">
+        <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Streaming Details</p>
+        {isFetching && (
+          <span className="flex items-center gap-1 text-secondary-fixed">
+            <span className="w-1.5 h-1.5 rounded-full bg-secondary-fixed animate-pulse" />
+            <span className="font-label-sm text-[10px] uppercase tracking-widest">Fetching</span>
+          </span>
+        )}
+      </div>
+
+      {bufferedAheadSec != null && (
+        <div className="flex items-baseline justify-between">
+          <span className="text-on-surface-variant font-label-sm text-label-sm">Buffered ahead</span>
+          <span className="font-headline-sm text-headline-sm text-white">{bufferedAheadSec.toFixed(1)}s</span>
+        </div>
+      )}
+
       {!latest ? (
-        <p className="text-on-surface-variant font-label-sm text-label-sm">Fetch telemetry will appear here once playback starts.</p>
+        <p className="text-on-surface-variant font-label-sm text-label-sm">Waiting for the first chunk fetch to complete...</p>
       ) : (
         <>
           <div className="flex items-baseline gap-2">
