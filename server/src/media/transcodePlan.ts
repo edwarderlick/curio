@@ -3,14 +3,14 @@ import { execFfmpeg, mapNamesToDirs, NodeMediaProbe, SystemChecker } from "@shel
 
 /**
  * Ladder tiers, keyed by short-side (the dimension that actually reflects
- * quality regardless of orientation) — two rungs kept deliberately small so
- * a dev-loop transcode finishes in a reasonable time. Swap for
- * `hlsCmaf.presets.vodHd_1080p` for a production-grade ladder.
+ * quality regardless of orientation). Deliberately a single small rung —
+ * this runs on a free burstable-CPU VM (e.g. GCP e2-micro), which throttles
+ * hard under sustained encode load once its burst credit runs out, so
+ * every additional rendition roughly multiplies real-world transcode time.
+ * Swap for `hlsCmaf.presets.vodHd_1080p` (or add rungs back) once this runs
+ * somewhere with a real dedicated vCPU.
  */
-const LADDER_TIERS = [
-  { shortSide: 480, bitrateBps: 1_200_000, name: "480p" },
-  { shortSide: 720, bitrateBps: 2_500_000, name: "720p" },
-];
+const LADDER_TIERS = [{ shortSide: 480, bitrateBps: 1_200_000, name: "480p" }];
 
 interface LadderRung {
   width: number;
@@ -80,7 +80,9 @@ export async function runTranscode(inputPath: string, outputDir: string): Promis
     .input(inputPath)
     .outputDir(outputDir)
     .withLadder(ladder)
-    .withVideoEncoder(hlsCmaf.x264({ preset: "veryfast" }))
+    // "ultrafast" trades compression efficiency (bigger files) for raw
+    // encode speed — the right tradeoff on CPU-constrained free hosting.
+    .withVideoEncoder(hlsCmaf.x264({ preset: "ultrafast" }))
     .withAudio(hlsCmaf.aac({ sampleRate: 48000 }), { language: "eng", bitrateBps: 128_000, default: true })
     .withSegmentsFixed(6)
     .hlsCmaf({ masterName: "master.m3u8" });
