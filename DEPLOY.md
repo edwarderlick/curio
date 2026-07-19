@@ -44,8 +44,19 @@ created automatically on first request — no migration step to run.
 
    APTOS_FULLNODE=https://api.shelbynet.shelby.xyz/v1
    SOLANA_RPC_ENDPOINT=
+   SHELBY_RPC_ENDPOINT=https://api.shelbynet.shelby.xyz/shelby
+   SHELBY_API_KEY=<your real geomi.dev key>
    ```
    (`DATABASE_URL`/`POSTGRES_URL` are already set by the Neon integration from Part A.)
+
+   **`SHELBY_API_KEY` isn't optional in practice**, unlike its `VITE_`
+   counterpart: `api/stream/[...path].ts` proxies every video/thumbnail read
+   through this key so a plain `<video>`/`<img>` tag (which can't send the
+   Authorization header the key needs) doesn't leave every viewer hitting
+   Shelby's RPC anonymously — and anonymous reads hit Shelby's per-IP byte
+   rate limit fast (a handful of page reloads is enough to trip "Per
+   anonymous IP rate limit exceeded" and blank out playback). Get a free key
+   at [geomi.dev](https://geomi.dev).
 5. Deploy.
 
 That's it — one deployment, one URL. No second host, no `VITE_API_BASE_URL` to
