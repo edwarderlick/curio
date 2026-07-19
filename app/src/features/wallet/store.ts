@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 import type { ChainId } from "@/types";
 import type { WalletAdapterSigner } from "@shelby-protocol/react";
 
@@ -97,15 +98,25 @@ export function useConnectedAddress() {
  * `storageAccountAddress` (not `address`) is what real Shelby blob paths are
  * keyed on: for Ethereum/Solana wallets it's a DAA-derived Aptos account,
  * distinct from the native chain address.
+ *
+ * Wrapped in useShallow: a plain selector returning a fresh `{...}` object
+ * literal looks "changed" to Zustand's default reference-equality check on
+ * *every* store update, even ones unrelated to storage signing — which,
+ * combined with an upstream value that isn't perfectly stable either, is
+ * how this cascaded into a real React "Maximum update depth exceeded"
+ * crash during the upload flow's wallet signature prompt. useShallow only
+ * re-renders subscribers when the object's own fields actually changed.
  */
 export function useStorageSigner() {
-  return useWalletStore((s) => {
-    for (const chain of ["aptos", "ethereum", "solana"] as const) {
-      const connection = s.connections[chain];
-      if (connection.signer && connection.storageAccountAddress) {
-        return { signer: connection.signer, storageAccountAddress: connection.storageAccountAddress, chain };
+  return useWalletStore(
+    useShallow((s) => {
+      for (const chain of ["aptos", "ethereum", "solana"] as const) {
+        const connection = s.connections[chain];
+        if (connection.signer && connection.storageAccountAddress) {
+          return { signer: connection.signer, storageAccountAddress: connection.storageAccountAddress, chain };
+        }
       }
-    }
-    return { signer: null, storageAccountAddress: null, chain: null };
-  });
+      return { signer: null, storageAccountAddress: null, chain: null };
+    }),
+  );
 }
