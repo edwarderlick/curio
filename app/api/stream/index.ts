@@ -33,6 +33,12 @@ const MIME_BY_EXTENSION: Record<string, string> = {
  * Streams the response through (forwarding Range/Content-Range) rather
  * than buffering it, so seeking still works and large files don't need to
  * fully load into this function's memory.
+ *
+ * Takes the blob path as a `?path=` query param rather than a `[...path]`
+ * catch-all URL segment — confirmed live that this deployment's catch-all
+ * dynamic routes 404 at the platform level (X-Vercel-Error: NOT_FOUND)
+ * even though single-segment `[id]` routes resolve fine, so this sticks to
+ * the plain-static-route pattern that's already proven to work here.
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET" && req.method !== "HEAD") {
@@ -40,9 +46,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const segments = req.query.path;
-  const blobPath = Array.isArray(segments) ? segments.join("/") : segments;
-  if (!blobPath) return res.status(400).json({ error: "Missing blob path" });
+  const rawPath = req.query.path;
+  const blobPath = Array.isArray(rawPath) ? rawPath[0] : rawPath;
+  if (!blobPath) return res.status(400).json({ error: "Missing path query parameter" });
 
   const rpcEndpoint = (process.env.SHELBY_RPC_ENDPOINT || "https://api.shelbynet.shelby.xyz/shelby").replace(/\/$/, "");
   const upstreamHeaders: Record<string, string> = {};
