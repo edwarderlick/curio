@@ -87,3 +87,25 @@ export function useIsAnyWalletConnected() {
 export function useConnectedAddress() {
   return useWalletStore((s) => s.connections.aptos.address ?? s.connections.ethereum.address ?? s.connections.solana.address);
 }
+
+/**
+ * First connected wallet's Shelby-storage-capable signer, same aptos →
+ * ethereum → solana priority as useConnectedAddress(). Used for direct
+ * browser uploads/deletes against Shelby (see useUploadBlobs/useDeleteBlobs)
+ * now that there's no server holding a platform signing key — every blob is
+ * written under whichever wallet's storage account is currently connected.
+ * `storageAccountAddress` (not `address`) is what real Shelby blob paths are
+ * keyed on: for Ethereum/Solana wallets it's a DAA-derived Aptos account,
+ * distinct from the native chain address.
+ */
+export function useStorageSigner() {
+  return useWalletStore((s) => {
+    for (const chain of ["aptos", "ethereum", "solana"] as const) {
+      const connection = s.connections[chain];
+      if (connection.signer && connection.storageAccountAddress) {
+        return { signer: connection.signer, storageAccountAddress: connection.storageAccountAddress, chain };
+      }
+    }
+    return { signer: null, storageAccountAddress: null, chain: null };
+  });
+}

@@ -19,7 +19,7 @@ export function UploadWizard() {
   return (
     <div className="max-w-2xl mx-auto px-margin-mobile md:px-margin-desktop py-12">
       <h1 className="font-headline-lg text-headline-lg text-white mb-2">Upload New Lecture</h1>
-      <p className="text-on-surface-variant font-body-md mb-8">Real transcode, real Shelbynet blob storage — no simulated steps.</p>
+      <p className="text-on-surface-variant font-body-md mb-8">Direct-to-Shelby upload, signed by your wallet — no backend in between.</p>
 
       <div className="flex items-center gap-2 mb-10">
         {STEPS.map((label, i) => (

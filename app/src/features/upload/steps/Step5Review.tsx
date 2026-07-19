@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUploadBlobs } from "@shelby-protocol/react";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
-import { useConnectedAddress, useWalletStore } from "@/features/wallet/store";
+import { useConnectedAddress, useStorageSigner, useWalletStore } from "@/features/wallet/store";
 import { API_BASE_URL } from "@/lib/apiBase";
+import { getBlobUrl } from "@/lib/shelby/blobUrl";
 import { CATEGORY_TONE, type UploadFormState } from "../types";
 
 interface StepProps {
@@ -81,6 +83,8 @@ function useVideoThumbnail(file: File | null) {
 export function Step5Review({ form, onBack }: StepProps) {
   const navigate = useNavigate();
   const connections = useWalletStore((s) => s.connections);
+  const { signer, storageAccountAddress } = useStorageSigner();
+  const uploadBlobs = useUploadBlobs({});
   const durationSeconds = useVideoDuration(form.file);
   const thumbnailBlob = useVideoThumbnail(form.file);
   const [publishing, setPublishing] = useState(false);
@@ -121,18 +125,16 @@ export function Step5Review({ form, onBack }: StepProps) {
         }),
       });
 
+      const expirationMicros = Date.now() * 1000 + form.storageDays * 86_400 * 1_000_000;
+
       let thumbnailUrl = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800";
-      if (thumbnailBlob) {
-        const thumbForm = new FormData();
-        thumbForm.append("thumbnail", thumbnailBlob, "thumbnail.jpg");
-        const thumbRes = await fetch(`${API_BASE_URL}/api/upload/thumbnail`, { method: "POST", body: thumbForm });
-        if (thumbRes.ok) {
-          const { url } = (await thumbRes.json()) as { url: string };
-          thumbnailUrl = url;
-        }
+      if (thumbnailBlob && signer && storageAccountAddress) {
+        const blobName = `thumbnails/${form.courseId}/${crypto.randomUUID()}.jpg`;
+        const blobData = new Uint8Array(await thumbnailBlob.arrayBuffer());
+        await uploadBlobs.mutateAsync({ signer, blobs: [{ blobName, blobData }], expirationMicros });
+        thumbnailUrl = getBlobUrl(`${storageAccountAddress}/${blobName}`);
       }
 
-      const expirationMicros = Date.now() * 1000 + form.storageDays * 86_400 * 1_000_000;
       const res = await fetch(`${BASE}/lectures`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

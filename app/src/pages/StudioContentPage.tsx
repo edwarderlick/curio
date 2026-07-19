@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useConnectedAddress } from "@/features/wallet/store";
+import { useDeleteBlobs } from "@shelby-protocol/react";
+import { useConnectedAddress, useStorageSigner } from "@/features/wallet/store";
 import { useLectures, useUnlockGrants } from "@/lib/index/hooks";
-import { deleteLecture, extendLectureExpiration } from "@/lib/index/catalogClient";
+import { deleteLecture, extendLectureExpiration, fetchLecture } from "@/lib/index/catalogClient";
+import { blobNameFromManifestPath, manifestPathFromBlobUrl } from "@/lib/shelby/blobUrl";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -13,6 +15,8 @@ const DAY_MICROS = 86_400 * 1_000_000;
 
 export function StudioContentPage() {
   const address = useConnectedAddress();
+  const { signer } = useStorageSigner();
+  const deleteBlobs = useDeleteBlobs({});
   const queryClient = useQueryClient();
   const { data, isLoading, isError, refetch } = useLectures(address ? { creatorId: address } : {});
   const { data: grants } = useUnlockGrants(address ? { creatorId: address } : {});
@@ -72,6 +76,17 @@ export function StudioContentPage() {
     setDeleting(true);
     setDeleteError(null);
     try {
+      // Delete the real Shelby blobs first — signed by the creator's own
+      // wallet, since there's no server-held key to do this anymore. Only
+      // once that succeeds do we drop the catalog record, so a failed/partial
+      // blob deletion never leaves a dangling listing pointing at nothing.
+      if (!signer) throw new Error("Wallet signer unavailable — reconnect your wallet and try again.");
+      const { lecture } = await fetchLecture(deleteTarget.id);
+      const blobNames = [blobNameFromManifestPath(lecture.manifestPath)];
+      const thumbPath = manifestPathFromBlobUrl(lecture.thumbnailUrl);
+      if (thumbPath) blobNames.push(blobNameFromManifestPath(thumbPath));
+      await deleteBlobs.mutateAsync({ signer, blobNames });
+
       await deleteLecture(deleteTarget.id, address);
       await queryClient.invalidateQueries({ queryKey: ["lectures"] });
       setDeleteTarget(null);

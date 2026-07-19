@@ -1,5 +1,6 @@
 import type { ChainId } from "@/types";
-import type { JobState } from "@/lib/upload/uploadClient";
+
+export type UploadStatus = "idle" | "uploading" | "complete" | "error";
 
 export interface UploadFormState {
   file: File | null;
@@ -12,8 +13,8 @@ export interface UploadFormState {
   chain: ChainId;
   priceUsd: number;
   storageDays: number;
-  jobId: string | null;
-  job: JobState | null;
+  uploadStatus: UploadStatus;
+  uploadError: string | null;
   manifestPath: string | null;
   publishedLectureId: string | null;
 }
@@ -29,8 +30,8 @@ export const initialUploadForm: UploadFormState = {
   chain: "aptos",
   priceUsd: 5,
   storageDays: 90,
-  jobId: null,
-  job: null,
+  uploadStatus: "idle",
+  uploadError: null,
   manifestPath: null,
   publishedLectureId: null,
 };

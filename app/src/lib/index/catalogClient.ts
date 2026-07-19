@@ -141,7 +141,10 @@ export async function extendLectureExpiration(id: string, expirationMicros: numb
   }
 }
 
-export async function deleteLecture(id: string, walletAddress: string): Promise<{ deletedBlobs: number }> {
+/** Removes the catalog record only — the caller is responsible for deleting
+ * the actual Shelby blobs first (signed by their own wallet; see
+ * StudioContentPage), since there's no server-held signing key to do it here. */
+export async function deleteLecture(id: string, walletAddress: string): Promise<void> {
   const res = await fetch(`${BASE}/lectures/${id}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
@@ -151,7 +154,6 @@ export async function deleteLecture(id: string, walletAddress: string): Promise<
     const body = await res.json().catch(() => null);
     throw new Error(body?.error ?? `Failed to delete lecture: ${res.status}`);
   }
-  return res.json();
 }
 
 export async function recordUnlockGrant(grant: UnlockGrant): Promise<void> {

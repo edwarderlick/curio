@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useUploadBlobs } from "@shelby-protocol/react";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Button } from "@/components/ui/Button";
-import { startUploadJob, subscribeToJob, type JobStage } from "@/lib/upload/uploadClient";
+import { useStorageSigner, useWalletStore } from "@/features/wallet/store";
 import type { UploadFormState } from "../types";
 
 interface StepProps {
@@ -11,111 +12,104 @@ interface StepProps {
   onBack: () => void;
 }
 
-const STAGE_ORDER: JobStage[] = ["uploading_source", "transcoding", "uploading_segments", "complete"];
-const STAGE_LABEL: Record<JobStage, string> = {
-  uploading_source: "Uploading source file",
-  transcoding: "Transcoding to multi-bitrate HLS",
-  uploading_segments: "Registering & uploading segments to Shelbynet",
-  complete: "Published to Shelbynet",
-  error: "Failed",
-};
-
+/** Uploads the raw source file straight to Shelby, signed by whichever
+ * wallet is connected — no server, no transcode. There's no HLS ladder to
+ * build anymore, so this is a single blob write rather than a multi-stage
+ * pipeline; the player (see ShelbyVideoPlayer) plays the raw file directly. */
 export function Step3Processing({ form, setForm, onNext, onBack }: StepProps) {
-  const [error, setError] = useState<string | null>(null);
+  const { signer, storageAccountAddress } = useStorageSigner();
+  const openConnectModal = useWalletStore((s) => s.openConnectModal);
+  const uploadBlobs = useUploadBlobs({});
   const started = useRef(false);
 
   useEffect(() => {
-    if (started.current || !form.file) return;
+    if (started.current || !form.file || !signer || !storageAccountAddress) return;
     started.current = true;
 
-    const lectureId = crypto.randomUUID();
+    const file = form.file;
+    const extension = file.name.includes(".") ? file.name.split(".").pop() : "mp4";
+    const blobName = `courses/${form.courseId}/${crypto.randomUUID()}/source.${extension}`;
     const expirationMicros = Date.now() * 1000 + form.storageDays * 86_400 * 1_000_000;
+
+    setForm({ uploadStatus: "uploading", uploadError: null });
 
     (async () => {
       try {
-        const jobId = await startUploadJob({ file: form.file as File, courseId: form.courseId, lectureId, expirationMicros });
-        setForm({ jobId });
-        subscribeToJob(jobId, (job) => {
-          setForm({ job });
-          if (job.stage === "error") setError(job.error ?? "Upload failed");
-          if (job.stage === "complete" && job.manifestPath) {
-            setForm({ manifestPath: job.manifestPath });
-          }
-        });
+        const blobData = new Uint8Array(await file.arrayBuffer());
+        await uploadBlobs.mutateAsync({ signer, blobs: [{ blobName, blobData }], expirationMicros });
+        setForm({ uploadStatus: "complete", manifestPath: `${storageAccountAddress}/${blobName}` });
       } catch (err) {
-        setError(err instanceof Error ? err.message : String(err));
+        setForm({ uploadStatus: "error", uploadError: err instanceof Error ? err.message : String(err) });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [signer, storageAccountAddress]);
 
   function retry() {
     started.current = false;
-    setError(null);
-    setForm({ job: null, jobId: null, manifestPath: null });
+    setForm({ uploadStatus: "idle", uploadError: null, manifestPath: null });
   }
-
-  const currentStageIndex = form.job ? STAGE_ORDER.indexOf(form.job.stage) : -1;
 
   return (
     <div className="space-y-6">
       <GlassPanel className="p-8 space-y-5">
-        {STAGE_ORDER.map((stage, i) => {
-          const done = currentStageIndex > i || (stage === "complete" && form.job?.stage === "complete");
-          const active = currentStageIndex === i && form.job?.stage !== "error";
-          return (
-            <div key={stage} className="flex items-center gap-4">
-              <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                  done ? "bg-secondary-container/20 text-secondary-fixed" : active ? "bg-primary-container/20 text-primary" : "bg-white/5 text-on-surface-variant"
-                }`}
-              >
-                {done ? (
-                  <span className="material-symbols-outlined text-lg">check</span>
-                ) : active ? (
-                  <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
-                ) : (
-                  <span className="text-xs font-label-sm">{i + 1}</span>
-                )}
-              </div>
-              <div className="flex-1">
-                <p className={`font-body-md ${done || active ? "text-white" : "text-on-surface-variant"}`}>{STAGE_LABEL[stage]}</p>
-                {active && stage === "uploading_segments" && form.job?.progress && (
-                  <div className="mt-2 space-y-1">
-                    <div className="h-1.5 bg-surface-container-high rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary-container transition-all"
-                        style={{ width: `${(form.job.progress.current / Math.max(form.job.progress.total, 1)) * 100}%` }}
-                      />
-                    </div>
-                    <p className="font-label-sm text-label-sm text-on-surface-variant">{form.job.message}</p>
-                  </div>
-                )}
-                {active && stage !== "uploading_segments" && form.job?.message && (
-                  <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">{form.job.message}</p>
-                )}
-              </div>
+        {!signer || !storageAccountAddress ? (
+          <div className="flex flex-col items-center text-center gap-4 py-4">
+            <span className="material-symbols-outlined text-4xl text-primary">account_balance_wallet</span>
+            <p className="text-white font-body-md">Connect a wallet to upload — Shelby storage writes are signed by your wallet, not a server.</p>
+            <Button onClick={openConnectModal}>Connect Wallet</Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-4">
+            <div
+              className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                form.uploadStatus === "complete"
+                  ? "bg-secondary-container/20 text-secondary-fixed"
+                  : form.uploadStatus === "error"
+                    ? "bg-error/10 text-error"
+                    : "bg-primary-container/20 text-primary"
+              }`}
+            >
+              {form.uploadStatus === "complete" ? (
+                <span className="material-symbols-outlined text-lg">check</span>
+              ) : form.uploadStatus === "error" ? (
+                <span className="material-symbols-outlined text-lg">error</span>
+              ) : (
+                <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+              )}
             </div>
-          );
-        })}
+            <div className="flex-1">
+              <p className="font-body-md text-white">
+                {form.uploadStatus === "complete"
+                  ? "Uploaded to Shelbynet"
+                  : form.uploadStatus === "error"
+                    ? "Upload failed"
+                    : "Uploading to Shelbynet..."}
+              </p>
+              {form.uploadStatus === "complete" && form.manifestPath && (
+                <p className="font-label-sm text-label-sm text-secondary-fixed break-all mt-1">{form.manifestPath}</p>
+              )}
+            </div>
+          </div>
+        )}
       </GlassPanel>
 
-      {error && (
+      {form.uploadError && (
         <div className="rounded-2xl bg-error-container/10 border border-error-container/30 p-4">
-          <p className="text-error font-label-sm text-label-sm break-words">{error}</p>
+          <p className="text-error font-label-sm text-label-sm break-words">{form.uploadError}</p>
         </div>
       )}
 
       <div className="flex gap-3">
-        <Button variant="secondary" onClick={onBack} disabled={Boolean(form.job && form.job.stage !== "error")}>
+        <Button variant="secondary" onClick={onBack} disabled={form.uploadStatus === "uploading"}>
           Back
         </Button>
-        {error ? (
+        {form.uploadStatus === "error" ? (
           <Button className="flex-1" size="lg" onClick={retry}>
             Retry
           </Button>
         ) : (
-          <Button className="flex-1" size="lg" disabled={form.job?.stage !== "complete"} onClick={onNext}>
+          <Button className="flex-1" size="lg" disabled={form.uploadStatus !== "complete"} onClick={onNext}>
             Continue to Pricing
           </Button>
         )}

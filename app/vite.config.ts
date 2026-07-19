@@ -15,28 +15,20 @@ export default defineConfig({
   define: {
     global: "globalThis",
   },
-  server: {
-    proxy: {
-      // Node-only transcode pipeline (system ffmpeg) lives in ../server —
-      // see server/README for why this can't run in the browser.
-      "/api": {
-        target: "http://localhost:8787",
-        changeOrigin: true,
-      },
-    },
-  },
+  // No dev proxy: /api/* is now Vercel serverless functions (see api/),
+  // same-origin with the app in production. For local full-stack dev
+  // (functions + Vite together), run `vercel dev` from this directory
+  // instead of `vite dev` directly — see ../DEPLOY.md.
   build: {
     rolldownOptions: {
       output: {
         // Split the heaviest per-ecosystem SDKs into their own cacheable
-        // chunks — routes not touching a given chain/player don't need to
-        // wait on it.
+        // chunks — routes not touching a given chain don't need to wait on it.
         codeSplitting: {
           groups: [
             { name: "vendor-solana", test: /node_modules\/@solana\// },
             { name: "vendor-wagmi", test: /node_modules\/(wagmi|viem|@wagmi)\// },
             { name: "vendor-aptos", test: /node_modules\/@aptos-labs\// },
-            { name: "vendor-shaka", test: /node_modules\/(shaka-player|shaka-video-element|@shelby-protocol\/player)\// },
           ],
         },
       },
