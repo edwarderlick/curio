@@ -4,8 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "npm run build:polyfill",
     "dev": "vite",
+    "prebuild": "npm run build:polyfill",
     "build": "tsc -b && vite build",
+    "build:polyfill": "esbuild src/polyfills.ts --bundle --format=iife --outfile=public/buffer-polyfill.js --platform=browser --target=es2020",
     "lint": "oxlint",
     "preview": "vite preview",
     "postinstall": "patch-package"
@@ -42,6 +45,7 @@
     "@vercel/node": "^5.4.1",
     "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.5.4",
+    "esbuild": "^0.27.0",
     "oxlint": "^1.71.0",
     "patch-package": "^8.0.1",
     "postcss": "^8.5.19",

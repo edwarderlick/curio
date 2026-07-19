@@ -16,6 +16,20 @@
   </head>
   <body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
     <div id="root"></div>
+    <!-- Deliberately a classic (non-module) script, generated from
+         src/polyfills.ts by `npm run build:polyfill` (runs automatically
+         before `dev`/`build`). Classic scripts always execute before any
+         `type="module"` script, no exceptions — module scripts are
+         inherently deferred and their *relative* execution order among
+         each other depends on the bundler's chunk graph, which isn't a
+         strong enough guarantee here: once vendor deps (e.g. @solana/web3.js,
+         @shelby-protocol/sdk/browser — both read `Buffer` at their own
+         module top level) get split into separate chunks, cross-chunk
+         imports get hoisted ahead of a same-chunk sibling assignment, so a
+         plain `import './polyfills'` inside main.tsx can end up running
+         *after* the vendor code that needs it. A real classic script
+         sidesteps the module graph entirely. -->
+    <script src="/buffer-polyfill.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
