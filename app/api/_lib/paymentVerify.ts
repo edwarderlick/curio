@@ -1,5 +1,4 @@
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
-import { Connection, clusterApiUrl } from "@solana/web3.js";
 import { createPublicClient, http } from "viem";
 import { sepolia } from "viem/chains";
 
@@ -21,7 +20,7 @@ import { sepolia } from "viem/chains";
 
 const aptos = new Aptos(new AptosConfig({ network: Network.SHELBYNET, fullnode: process.env.APTOS_FULLNODE }));
 const ethClient = createPublicClient({ chain: sepolia, transport: http() });
-const solConnection = new Connection(process.env.SOLANA_RPC_ENDPOINT || clusterApiUrl("devnet"), "confirmed");
+const solanaRpcEndpoint = process.env.SOLANA_RPC_ENDPOINT || "https://api.devnet.solana.com";
 
 interface VerifyParams {
   txHash: string;
@@ -61,20 +60,44 @@ async function verifyEthereumTransfer({ txHash, sender, recipient }: VerifyParam
   }
 }
 
+interface ParsedInstruction {
+  program?: string;
+  parsed?: { type?: string; info?: { source?: string; destination?: string; lamports?: number } };
+}
+
+/**
+ * Plain JSON-RPC `getTransaction` call instead of @solana/web3.js's
+ * `Connection.getParsedTransaction` — importing @solana/web3.js here pulls
+ * in `rpc-websockets` (its account-subscription machinery, unused for this
+ * one read-only call), which has a broken CJS/ESM interop with a newer
+ * `uuid` under Vercel's Node runtime (`ERR_REQUIRE_ESM`) and crashes this
+ * whole module at import time — confirmed live via Vercel's function logs,
+ * taking down every unlock-grants request (all chains, not just Solana)
+ * with it. A raw `fetch` avoids the dependency entirely; the RPC response
+ * shape with `encoding: "jsonParsed"` is exactly what the SDK wrapped.
+ */
 async function verifySolanaTransfer({ txHash, sender, recipient }: VerifyParams): Promise<boolean> {
   try {
-    const tx = await solConnection.getParsedTransaction(txHash, { maxSupportedTransactionVersion: 0 });
-    if (!tx || tx.meta?.err) return false;
-    const instructions = tx.transaction.message.instructions;
-    const transferIx = instructions.find(
-      (ix): ix is typeof ix & { parsed: { type: string; info: { source: string; destination: string; lamports: number } } } =>
-        "parsed" in ix && ix.program === "system" && ix.parsed?.type === "transfer",
-    );
-    if (!transferIx) return false;
-    const { source, destination, lamports } = transferIx.parsed.info;
-    if (source !== sender) return false;
-    if (destination !== recipient) return false;
-    if (!(lamports > 0)) return false;
+    const res = await fetch(solanaRpcEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "getTransaction",
+        params: [txHash, { encoding: "jsonParsed", maxSupportedTransactionVersion: 0 }],
+      }),
+    });
+    const { result } = (await res.json()) as {
+      result: { meta?: { err: unknown }; transaction: { message: { instructions: ParsedInstruction[] } } } | null;
+    };
+    if (!result || result.meta?.err) return false;
+    const transferIx = result.transaction.message.instructions.find((ix) => ix.program === "system" && ix.parsed?.type === "transfer");
+    const info = transferIx?.parsed?.info;
+    if (!info) return false;
+    if (info.source !== sender) return false;
+    if (info.destination !== recipient) return false;
+    if (!(info.lamports && info.lamports > 0)) return false;
     return true;
   } catch {
     return false;
