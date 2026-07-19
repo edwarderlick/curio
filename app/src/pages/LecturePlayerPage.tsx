@@ -3,6 +3,7 @@ import { useLecture, useIsLectureUnlocked } from "@/lib/index/hooks";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { getBlobUrl } from "@/lib/shelby/blobUrl";
 import { ShelbyVideoPlayer } from "@/features/player/ShelbyVideoPlayer";
+import { StreamStats } from "@/features/player/StreamStats";
 
 export function LecturePlayerPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +34,12 @@ export function LecturePlayerPage() {
         </Link>
       </div>
 
-      <ShelbyVideoPlayer src={manifestUrl} title={lecture.title} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2">
+          <ShelbyVideoPlayer src={manifestUrl} title={lecture.title} />
+        </div>
+        <StreamStats src={manifestUrl} />
+      </div>
 
       <div>
         <h1 className="font-headline-lg text-headline-lg text-white">{lecture.title}</h1>
