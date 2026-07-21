@@ -65,6 +65,10 @@ interface ParsedInstruction {
   parsed?: { type?: string; info?: { source?: string; destination?: string; lamports?: number } };
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * Plain JSON-RPC `getTransaction` call instead of @solana/web3.js's
  * `Connection.getParsedTransaction` — importing @solana/web3.js here pulls
@@ -75,8 +79,36 @@ interface ParsedInstruction {
  * taking down every unlock-grants request (all chains, not just Solana)
  * with it. A raw `fetch` avoids the dependency entirely; the RPC response
  * shape with `encoding: "jsonParsed"` is exactly what the SDK wrapped.
+ *
+ * Retries only on "not found yet", not on every failure: the client
+ * confirms the payment against this same default endpoint
+ * (clusterApiUrl("devnet") client-side, same public devnet RPC server-side
+ * when SOLANA_RPC_ENDPOINT is unset) before this ever runs, so a `null`
+ * result here isn't "the transaction doesn't exist" — it's Solana's public
+ * devnet RPC (well-documented as rate-limited/inconsistent) not yet having
+ * indexed a transaction that was confirmed moments ago, sometimes landing
+ * on a different backend node than the one that served the confirmation.
+ * Confirmed live: a real payment the client successfully confirmed still
+ * 402'd on the very next request. A definitive mismatch (wrong sender,
+ * wrong recipient, zero amount, an actual on-chain failure) means the
+ * claim is simply wrong and waiting won't change that — only "not found"
+ * gets retried, so a fabricated hash still fails fast instead of costing
+ * 4x the latency.
  */
-async function verifySolanaTransfer({ txHash, sender, recipient }: VerifyParams): Promise<boolean> {
+async function verifySolanaTransfer(params: VerifyParams): Promise<boolean> {
+  const attempts = 4;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    if (attempt > 0) await sleep(750 * attempt);
+    const outcome = await verifySolanaTransferOnce(params);
+    if (outcome === "verified") return true;
+    if (outcome === "invalid") return false;
+  }
+  return false;
+}
+
+type SolanaVerifyOutcome = "verified" | "not-found" | "invalid";
+
+async function verifySolanaTransferOnce({ txHash, sender, recipient }: VerifyParams): Promise<SolanaVerifyOutcome> {
   try {
     const res = await fetch(solanaRpcEndpoint, {
       method: "POST",
@@ -91,16 +123,19 @@ async function verifySolanaTransfer({ txHash, sender, recipient }: VerifyParams)
     const { result } = (await res.json()) as {
       result: { meta?: { err: unknown }; transaction: { message: { instructions: ParsedInstruction[] } } } | null;
     };
-    if (!result || result.meta?.err) return false;
+    if (!result) return "not-found";
+    if (result.meta?.err) return "invalid";
     const transferIx = result.transaction.message.instructions.find((ix) => ix.program === "system" && ix.parsed?.type === "transfer");
     const info = transferIx?.parsed?.info;
-    if (!info) return false;
-    if (info.source !== sender) return false;
-    if (info.destination !== recipient) return false;
-    if (!(info.lamports && info.lamports > 0)) return false;
-    return true;
+    if (!info) return "invalid";
+    if (info.source !== sender) return "invalid";
+    if (info.destination !== recipient) return "invalid";
+    if (!(info.lamports && info.lamports > 0)) return "invalid";
+    return "verified";
   } catch {
-    return false;
+    // A network/parse error against a flaky public RPC is transient, same
+    // as "not found" — worth a retry rather than failing the claim outright.
+    return "not-found";
   }
 }
 
